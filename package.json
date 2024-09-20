@@ -1,0 +1,14 @@
+{
+  "name": "learning-management-system",
+  "version": "1.0.0",
+  "description": "This is the learning management system for pupilfirst capstone project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}
