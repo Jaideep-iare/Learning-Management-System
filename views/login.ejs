@@ -4,31 +4,31 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><%= title %></title>
         <link rel="stylesheet" href="./css/styles.css">
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
         <script src="https://cdn.tailwindcss.com"></script>
     </head>
     <body>
+        <%- include("header.ejs") %>
         <div class="grid grid-cols-6">
             <div class="col-start-3 col-span-2">
-                <%- include("header.ejs") %>
-                <h6 class="py-4">Login to your account</h6>
-                 <!-- Display Flash Messages -->
+                <h1 class="text-2xl font-bold mt-3">Login to your account</h1>
                 <form action="/session" method="post">
-                  
-                  
+
+                    
                     <div class="py-3">
                         <label for="email">Email:</label>
-                        <input type="email" name="email" id="" class="border border-grey-300 text-grey-900 rounded p-2 w-full">
+                        <input type="email" name="email" id="" class="border-2 border-slate-400 text-grey-900 rounded p-2 w-full">
                     </div>
                     
 
                     <div class="py-3">
                         <label for="password">Password:</label>
-                        <input type="password" name="password" id="" class="border border-grey-300 text-grey-900 rounded p-2 w-full">
+                        <input type="password" name="password" id="" class="border-2 border-slate-400 text-grey-900 rounded p-2 w-full">
                     </div>
 
 
                     <div class="py-3">
-                        <button type="submit" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2">Sign in</button>
+                        <button type="submit" class="text-white bg-primary hover:bg-green-800 font-medium rounded px-5 py-2">Sign in</button>
                     </div>
                 </form>
                 
