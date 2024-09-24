@@ -5,6 +5,23 @@ body {
   height: 100px;
   color: white;
 }
+.profile-container{
+  position: relative;
+}
+.profile-details {
+  position: absolute;
+  width: 200px;
+  height: min-content;
+  visibility: hidden; 
+  top: 100%; 
+  left: 0; 
+  margin-top: 5px;
+  z-index: 2;
+}
+
+/* .profile-logo:hover + .profile-details {
+  display: flex; /* Show details on hover */
+/* } */ */
 .fit-content{
   width: fit-content;
 }
@@ -43,4 +60,15 @@ body {
 
 .hidden-to-show {
   display: flex !important; /* Class to hide elements */
+}
+.form-container-add-page{
+  width: 66%;
+  min-width: 500px;
+  margin: 0 auto;
+}
+/* signup select */
+.custom-select {
+  background: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"%3E%3Cpolygon points="0,0 20,0 10,10" fill="grey" /%3E%3C/svg%3E') no-repeat right 0.5rem center; /* Arrow icon */
+  background-size: 0.5rem; /* Size of the arrow */
+  width: 100%; /* Full width */
 }
