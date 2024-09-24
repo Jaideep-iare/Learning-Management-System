@@ -1,3 +1,5 @@
+
+
 //show the available course on view button
 function availableCourseDetails(){
     window.location.href = '/available'
@@ -9,11 +11,14 @@ function enrolledCourseDetails(){
 }
 
 
+
+
  // Ensure DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     const addCourseButton = document.getElementById("addCourse");
     const popupContainer = document.getElementsByClassName("popup-container")[0];
     const closeButton = document.getElementById("closeButton");
+    const profileDetails = document.getElementsByClassName("profile-details")[0];
     const chapters = document.querySelectorAll(".chapter-name");
 
     // Toggle the add course option visibility
@@ -33,6 +38,35 @@ document.addEventListener('DOMContentLoaded', () => {
             popupContainer.classList.remove("show");
         });
     }
+
+    //show the profile box
+    function showProfile() {
+        profileDetails.style.visibility = 'visible';
+    }
+    
+    function hideProfile() {
+        profileDetails.style.visibility = 'hidden';
+    }
+    
+    // Hide the profile box when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!document.getElementsByClassName("profile-logo")[0].contains(event.target) && 
+            !profileDetails.contains(event.target)) {
+            hideProfile();
+        }
+    });
+    
+    // Toggle profile details on logo click
+    document.getElementsByClassName("profile-logo")[0].addEventListener('click', function(event) {
+        event.stopPropagation(); // Prevent event from bubbling up to the document
+        const isVisible = profileDetails.style.visibility === 'visible';
+        if (isVisible) {
+            hideProfile();
+        } else {
+            showProfile();
+        }
+    });
+
 
     // Toggle visibility of all pages below the clicked chapter
     function togglePages(chapterElement) {
