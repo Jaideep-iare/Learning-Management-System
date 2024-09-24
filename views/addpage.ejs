@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%=title%></title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">    
+    <!-- Include Quill styles -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/quillstyles.css">
+</head>
+<body>
+  <%- include("header.ejs") %>
+  <div class="flex flex-col justify-content items-center mt-5 form-container-add-page">
+    <form action="/addpage" method="post" id="text-form" class="w-full">
+      <div id="editor-container">
+          <!-- This will be the text area where users can format their text -->
+      </div>
+
+      <!-- Hidden input to store the editor's content -->
+      <input type="hidden" name="formattedText" id="formattedText">
+
+      <button type="submit" class="btn btn-primary my-3 mx-1">Submit</button>
+    </form>
+  </div>
+    
+
+<% if (locals.text) { %>
+    <article  style="line-height: 1.5;"><%- text %></article>
+  <% } %>
+
+<!-- Include Quill library -->
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+<script src="js/quilltext.js"></script>
+
+
+  <script src="js/functionalities.js"></script>
+</body>
+</html>
