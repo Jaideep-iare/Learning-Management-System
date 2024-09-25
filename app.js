@@ -1,5 +1,7 @@
+/* eslint-disable no-unused-vars */
 const express = require("express")
 const path = require("path");
+
 
 const app = express();
 
@@ -8,18 +10,27 @@ app.set("view engine","ejs")
 
 
 //files and paths
+app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname,"public")));
+const {Course, Chapter, Enrollment, Progress, Page, Report, User } = require("./models")
 
-// Parse URL-encoded bodies (for form submissions)
+// Parse URL-encoded bodies mostly rich content like in quill editor as key value pairs
 app.use(express.urlencoded({ extended: true }));
-
-// Parse JSON bodies (for API requests, if needed)
 app.use(express.json());
 
-app.get("/",(req,res)=>{
-    res.render("home",{
-        title: "Learning Management system"
-    });
+
+app.get("/",async(req,res)=>{
+    const availablecourses = await Course.findAvailableCourse();
+    console.log(availablecourses);
+    if (req.accepts("html")){
+        res.render("home",{
+            title: "Home-Learning Management system",
+            availablecourses,
+        });
+    }else{
+        console.log("cannot accept the html");
+    }
+    
 })
 
 
@@ -30,12 +41,54 @@ app.get("/enrolled",(req,res)=>{
     });
 })
 
-//addchapter to the course  page
-app.get("/addchapter",(req,res)=>{
+//add chapter to database
+app.post("/addcourse", async(req,res)=>{
+    try {
+        const newcourse = await Course.create({
+            coursename: req.body.coursename,
+            description: req.body.description,
+        });
+        console.log("New course added is",newcourse);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error creating Course');
+    }
+})
+
+//addchapter display to the course  page
+app.get("/addchapter", async (req,res)=>{
+    const allChapters = await Chapter.findAll();
     res.render("addchapter",{
-        title: "Course Name"
+        title: "Add Chapter",
+        allChapters,
     });
 })
+
+//addchapter send chapter to the course
+app.post("/addchapter", async (req, res) => {
+    try {
+        const newchapter = await Chapter.create({
+            chaptername: req.body.chaptername,
+            chapterdescription: req.body.chapterdescription
+        });
+        console.log("New chapter added", newchapter);
+
+        const allChapters = Chapter.findAll();
+
+        if (req.accepts("html")) {
+            res.render("addchapter", {
+                title: "Add Chapter",
+                allChapters,
+            });
+        } else {
+            res.status(200).json(newchapter); // Respond with JSON if not HTML
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error creating chapter');
+    }
+});
+
 
 
 //addpage to the chapter of course
@@ -81,8 +134,22 @@ app.get("/available",(req,res)=>{
 })
 
 
-
-//signup route
+//user signup post request
+app.post("/users",async(req,res)=>{
+    try {
+        const user = await User.create({
+            name: req.body.name,
+            role: req.body.role,
+            email: req.body.email,
+            password: req.body.password,
+          });
+          console.log(user)
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error creating user');
+    }
+}) 
+//signup route  
 app.get("/signup",(req,res)=>{
     res.render("index",{
         title:"signup"
