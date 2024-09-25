@@ -1,0 +1,25 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "jaideep",
+    "database": "lms-dev",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "logging": false
+  },
+  "test": {
+    "username": "postgres",
+    "password": "jaideep",
+    "database": "lms-test",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "logging": false
+  },
+  "production": {
+    "username": "root",
+    "password": "jaideep",
+    "database": "lms-prod",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
+}
