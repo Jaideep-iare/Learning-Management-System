@@ -11,12 +11,23 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Page.belongsTo(models.Chapter, {
+        foreignKey: 'chapterid'
+      })
     }
+
+    static getPages(getChaptersByCourse){
+      return this.findAll({ 
+        where: { 
+          chapterid: getChaptersByCourse.map(ch => ch.id) 
+        } 
+      });
+    }
+
   }
   Page.init({
     pagename: DataTypes.STRING,
     content: DataTypes.TEXT,
-    pagenumber: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Page',
