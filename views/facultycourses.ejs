@@ -63,16 +63,15 @@
                     <button class="btn btn-danger" >Delete</button>
                 </form>
                     <!-- edit course -->
-                <form action="/addchapter" method="get">
-                    <button type="submit" class="btn btn-warning" id="editCourse">Edit</button>
-                </form>
+                    <button class="btn btn-warning" id="editCourse" onclick="window.location.href='/addchapter/<%=availablecourses[i].id %>'">Edit</button>
+
+                    
             </div>
     </div>
    <% } %>
     
 
-    
-    
+   
     
 
     
