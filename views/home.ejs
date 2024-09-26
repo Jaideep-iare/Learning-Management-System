@@ -18,10 +18,11 @@
 
     <h1 class="text-2xl font-bold m-3">Welcome Jane Doe</h1>
 
-    
-    <%- include("facultycourses.ejs") %>
+    <% var availablecourses = availablecourses %>
+    <%- include("facultycourses.ejs",{availablecourses:availablecourses}) %>
+
     <%- include("enrolledcourses.ejs") %>
-    <%- include("availablecourses.ejs") %>
+    <%- include("availablecourses.ejs",{availablecourses:availablecourses }) %>
 
     
    
