@@ -1,18 +1,5 @@
 
 
-//show the available course on view button
-function availableCourseDetails(){
-    window.location.href = '/available'
-}
-
-//show the enrolled course on view button
-function enrolledCourseDetails(){
-    window.location.href = '/enrolled'
-}
-
-
-
-
  // Ensure DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     const addCourseButton = document.getElementById("addCourse");
