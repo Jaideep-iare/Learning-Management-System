@@ -21,7 +21,7 @@ app.use(express.json());
 
 app.get("/",async(req,res)=>{
     const availablecourses = await Course.findAvailableCourse();
-    console.log(availablecourses);
+    // console.log(availablecourses);
     if (req.accepts("html")){
         res.render("home",{
             title: "Home-Learning Management system",
@@ -48,37 +48,55 @@ app.post("/addcourse", async(req,res)=>{
             coursename: req.body.coursename,
             description: req.body.description,
         });
-        console.log("New course added is",newcourse);
+        // console.log("New course added is",newcourse);
     } catch (error) {
         console.error(error);
         res.status(500).send('Error creating Course');
     }
 })
 
-//addchapter display to the course  page
-app.get("/addchapter", async (req,res)=>{
-    const allChapters = await Chapter.findAll();
-    res.render("addchapter",{
-        title: "Add Chapter",
-        allChapters,
-    });
-})
+//addchapter display to the course page
+app.get("/addchapter/:id", async (req, res) => {
+    const courseId = req.params.id;
+    try {
+        const getChaptersByCourse = await Chapter.getChapters(courseId); // Fetch chapters for this course
+        const allPagesOfCourse = await Page.getPages(getChaptersByCourse);
+
+ // Fetch all pages
+        
+        res.render("addchapter", {
+            title: "Add Chapter",
+            courseId,
+            getChaptersByCourse,
+            allPagesOfCourse // Pass allpages to the template
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error fetching chapters and pages');
+    }
+});
+
 
 //addchapter send chapter to the course
-app.post("/addchapter", async (req, res) => {
+app.post("/addchapter/:id", async (req, res) => {
     try {
+        const courseId = req.params.id
         const newchapter = await Chapter.create({
             chaptername: req.body.chaptername,
-            chapterdescription: req.body.chapterdescription
+            chapterdescription: req.body.chapterdescription,
+            courseid: courseId,
         });
-        console.log("New chapter added", newchapter);
+        // console.log("New chapter added", newchapter);
 
-        const allChapters = Chapter.findAll();
+        const getChaptersByCourse = await Chapter.getChapters(courseId);
+        const allPagesOfCourse = await Page.getPages(getChaptersByCourse);
 
         if (req.accepts("html")) {
             res.render("addchapter", {
                 title: "Add Chapter",
-                allChapters,
+                getChaptersByCourse,
+                allPagesOfCourse,
+                courseId
             });
         } else {
             res.status(200).json(newchapter); // Respond with JSON if not HTML
@@ -92,9 +110,12 @@ app.post("/addchapter", async (req, res) => {
 
 
 //addpage to the chapter of course
-app.get("/addpage",(req,res)=>{
+app.get("/addpage/:id", async(req,res)=>{
+    const chapterId = req.params.id;
+    console.log("Get Request page add for chapter id",chapterId)
     res.render("addpage",{
-        title: "Module Name"
+        title: "Module Name",
+        chapterId
     });
 })
 
@@ -112,14 +133,26 @@ app.get("/changepassword",(req,res)=>{
     });
 })
 
-app.post("/addpage", (req, res) => {
-    const formattedText = req.body.formattedText; // Now, this should not be undefined
-    console.log("Received formatted text:", formattedText);
+app.post("/addpage/:id", async(req, res) => {
+
+    const pageName = req.body.pagename;
+    const formattedText = req.body.content; //Rich Text content from the add page
+    const chapterId = req.params.id;
+    // console.log("Received formatted text:", formattedText, "pagename",pageName, "chapterid",chapterId);
+
+    //add page details to Pages table
+    const newPage = await Page.create({
+        pagename: pageName,
+        content: formattedText,
+        chapterid: chapterId
+    })
+    console.log("New page added", newPage)
   
     // Process or save the formattedText as needed
     res.render("addpage",{
       text:formattedText,
-      title: "Module Name"
+      title: "Module Name",
+      chapterId
       });
   });
 
@@ -127,9 +160,14 @@ app.post("/addpage", (req, res) => {
 
 
 //available course details page
-app.get("/available",(req,res)=>{
+app.get("/available/:id", async(req,res)=>{
+    const courseId = req.params.id;
+    const getChaptersByCourse = await Chapter.getChapters(courseId); 
+    const course = await Course.findByPk(courseId);
     res.render("available",{
-        title: "Course Name"
+        title: "Course Name",
+        getChaptersByCourse,
+        course
     });
 })
 
