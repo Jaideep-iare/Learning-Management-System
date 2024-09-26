@@ -72,3 +72,6 @@ body {
   background-size: 0.5rem; /* Size of the arrow */
   width: 100%; /* Full width */
 }
+#pagename{
+  border: 1px solid #ccc; 
+}
