@@ -19,7 +19,8 @@
     <h1 class="text-2xl font-bold m-3">Welcome Jane Doe</h1>
 
     <% var availablecourses = availablecourses %>
-    <%- include("facultycourses.ejs",{availablecourses:availablecourses}) %>
+    <% var loggedInUser = loggedInUser %>
+    <%- include("facultycourses.ejs",{availablecourses:availablecourses, loggedInUser:loggedInUser}) %>
 
     <%- include("enrolledcourses.ejs") %>
     <%- include("availablecourses.ejs",{availablecourses:availablecourses }) %>
