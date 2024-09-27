@@ -5,6 +5,12 @@ const path = require("path");
 
 const app = express();
 
+//passport
+const passport = require("passport");
+const localStrategy = require("passport-local");
+const connectEnsureLogin = require("connect-ensure-login");
+const session = require("express-session");
+
 //set ejs as view engine
 app.set("view engine","ejs")
 
@@ -18,14 +24,71 @@ const {Course, Chapter, Enrollment, Progress, Page, Report, User } = require("./
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+//define session duration:
+app.use(
+    session({
+      secret: "my-super-secret-key-215472655657",
+      cookie: {
+        maxAge: 24 * 60 * 60 * 1000, //24 hours
+      },
+    })
+  );
 
-app.get("/",async(req,res)=>{
+//ask passport to work with express application:
+app.use(passport.initialize());
+app.use(passport.session());
+
+//define authentication local strategy for passport:
+passport.use(new localStrategy({
+    usernameField: 'email',
+    passwordField: 'password',
+  }, (usernameField, passwordField, done)=>{
+    User.findOne({where: {email: usernameField, password: passwordField }})
+    .then((user)=>{
+      return done(null,user)//authentication successful
+    }).catch((error)=>{
+      return error;
+    })
+  }))
+
+  //After the user authenticated,store user in the session by serializing the user data:
+passport.serializeUser((user, done) => {
+    console.log("Serializing the user in the session", user.id);
+    done(null, user.id);
+  });
+//deserialize user
+passport.deserializeUser((id, done) => {
+    User.findByPk(id)
+      .then((user) => {
+        done(null, user);
+      })
+      .catch((error) => {
+        done(error, null);
+      });
+  });  
+  
+
+  //root page
+  app.get("/", async (req, res) => {
+    if (req.isAuthenticated()) {
+      res.redirect("/home");
+    } else {
+      res.render("index", {
+      });
+    }
+  });
+
+
+  //home page
+app.get("/home",connectEnsureLogin.ensureLoggedIn(), async(req,res)=>{
+    const loggedInUser = req.user;
     const availablecourses = await Course.findAvailableCourse();
     // console.log(availablecourses);
     if (req.accepts("html")){
         res.render("home",{
             title: "Home-Learning Management system",
             availablecourses,
+            loggedInUser
         });
     }else{
         console.log("cannot accept the html");
@@ -35,14 +98,14 @@ app.get("/",async(req,res)=>{
 
 
 //enrolled course details page
-app.get("/enrolled",(req,res)=>{
+app.get("/enrolled",connectEnsureLogin.ensureLoggedIn(), (req,res)=>{
     res.render("enrolled",{
         title: "Course Name"
     });
 })
 
 //add chapter to database
-app.post("/addcourse", async(req,res)=>{
+app.post("/addcourse",connectEnsureLogin.ensureLoggedIn(), async(req,res)=>{
     try {
         const newcourse = await Course.create({
             coursename: req.body.coursename,
@@ -56,7 +119,7 @@ app.post("/addcourse", async(req,res)=>{
 })
 
 //addchapter display to the course page
-app.get("/addchapter/:id", async (req, res) => {
+app.get("/addchapter/:id",connectEnsureLogin.ensureLoggedIn(),  async (req, res) => {
     const courseId = req.params.id;
     try {
         const getChaptersByCourse = await Chapter.getChapters(courseId); // Fetch chapters for this course
@@ -78,7 +141,7 @@ app.get("/addchapter/:id", async (req, res) => {
 
 
 //addchapter send chapter to the course
-app.post("/addchapter/:id", async (req, res) => {
+app.post("/addchapter/:id",connectEnsureLogin.ensureLoggedIn(),  async (req, res) => {
     try {
         const courseId = req.params.id
         const newchapter = await Chapter.create({
@@ -110,7 +173,7 @@ app.post("/addchapter/:id", async (req, res) => {
 
 
 //addpage to the chapter of course
-app.get("/addpage/:id", async(req,res)=>{
+app.get("/addpage/:id",connectEnsureLogin.ensureLoggedIn(),  async(req,res)=>{
     const chapterId = req.params.id;
     console.log("Get Request page add for chapter id",chapterId)
     res.render("addpage",{
@@ -120,20 +183,20 @@ app.get("/addpage/:id", async(req,res)=>{
 })
 
 //viewreport
-app.get("/viewreport",(req,res)=>{
+app.get("/viewreport",connectEnsureLogin.ensureLoggedIn(), (req,res)=>{
     res.render("viewreport",{
         title: "Report"
     });
 })
 
 //change password
-app.get("/changepassword",(req,res)=>{
+app.get("/changepassword",connectEnsureLogin.ensureLoggedIn(), (req,res)=>{
     res.render("changepassword",{
         title: "Change password"
     });
 })
 
-app.post("/addpage/:id", async(req, res) => {
+app.post("/addpage/:id",connectEnsureLogin.ensureLoggedIn(),  async(req, res) => {
 
     const pageName = req.body.pagename;
     const formattedText = req.body.content; //Rich Text content from the add page
@@ -160,7 +223,7 @@ app.post("/addpage/:id", async(req, res) => {
 
 
 //available course details page
-app.get("/available/:id", async(req,res)=>{
+app.get("/available/:id",connectEnsureLogin.ensureLoggedIn(),  async(req,res)=>{
     const courseId = req.params.id;
     const getChaptersByCourse = await Chapter.getChapters(courseId); 
     const course = await Course.findByPk(courseId);
@@ -181,6 +244,12 @@ app.post("/users",async(req,res)=>{
             email: req.body.email,
             password: req.body.password,
           });
+          req.login(user, (err)=>{    //these lines are added to initialize session
+            if(err){
+              console.log(err);
+            }
+            res.redirect("/home")
+          })
           console.log(user)
     } catch (error) {
         console.error(error);
@@ -198,7 +267,30 @@ app.get("/login",(req,res)=>{
     res.render("login",{
         title:"login"
     })
-})
+});
+
+//define session for login using passport.authenticate
+app.post(
+    "/session",
+    passport.authenticate("local", {
+      failureRedirect: "/login",
+      failureFlash: true,
+    }),
+    (req, res) => {
+    //   console.log(req.user);
+      res.redirect("/home"); //on successful login
+    }
+  );
+
+  //signout
+app.get("/signout", (req, res, next) => {
+    req.logout((err) => {
+      if (err) {
+        return next(err);
+      }
+      res.redirect("/");
+    });
+  });
 
 
 module.exports = app;
