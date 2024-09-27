@@ -67,11 +67,16 @@ body {
   margin: 0 auto;
 }
 /* signup select */
-.custom-select {
-  background: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"%3E%3Cpolygon points="0,0 20,0 10,10" fill="grey" /%3E%3C/svg%3E') no-repeat right 0.5rem center; /* Arrow icon */
-  background-size: 0.5rem; /* Size of the arrow */
-  width: 100%; /* Full width */
+.select-custom {
+  appearance: none; /* Remove default browser styling for the arrow */
+    padding: 10px; /* Padding for the text inside the select box */
+    padding-right: 30px; /* Extra padding on the right for the arrow */
+    background: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"%3E%3Cpolygon points="0,0 20,0 10,10" fill="grey" /%3E%3C/svg%3E') no-repeat right 0.5rem center; /* Arrow icon */
+    background-size: 10px; /* Size of the arrow */
+
+
 }
+
 #pagename{
   border: 1px solid #ccc; 
 }
