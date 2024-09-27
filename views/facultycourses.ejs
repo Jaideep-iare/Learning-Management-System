@@ -1,81 +1,54 @@
-<button class="m-3 btn btn-warning">View Report</button>
-<button id="addCourse" class="m-3 btn btn-success" >Add Course</button>
-    <!--  add-course container  -->
-<div class="popup-container">
-    <div class="popup flex">
-
-            <form action="/addcourse" method="post">
-                <div>
-                    <label for="coursename" class="font-medium">Course Name</label>
-                    <input type="text" class="border-2 border-slate-400 font-medium text-slate-900 rounded p-2 w-full my-3" name="coursename" id="">
-                </div>
-
-                <div>
-                    <label for="description" class="font-medium">Description</label>
-                    <textarea class="border-2 border-slate-400 font-medium text-slate-900 rounded p-2 w-full my-3 h-32 resize-none" name="description" id="description"></textarea>                </div>
-                <div class="flex justify-content-between">
-                    <button id="closeButton" class="m-3 btn btn-danger">Cancel</button>
-                    <button type="submit" class="m-3 btn btn-success">Submit</button>
-                </div>
-            </form>
-            
-    </div>
-</div>
-<p class="text-2xl font-medium ml-5 mb-2">Your Courses</p>
-<div class="container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-2">
-
-    <div class="flex flex-col border border-1 p-4">
-        <h3 class="mx-auto text-lg font-bold my-1">Introduction to Java</h3>
-        <div class="flex flex-row items-center justify-between my-4">
-            <h3>Author Name</h3>
-            <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="20" height="20">
-                    <path d="M16 12a5 5 0 1 1 5-5 5 5 0 0 1-5 5Zm0 10.68a10 10 0 0 1 6.73-5.4h.05a7 7 0 0 0-13.56 0 10 10 0 0 1 6.78 5.4ZM26.57 22a17.67 17.67 0 0 0-2.45.17c-4.27.58-7.54 2.63-8 5.16A3.42 3.42 0 0 0 16 28a3.42 3.42 0 0 0-.07-.71c-.51-2.53-3.78-4.58-8-5.16a17.67 17.67 0 0 0-2.5-.13H2v8h28v-8Zm-9.49.77a9 9 0 0 0-.78 2c1.51-1.78 4.26-3.1 7.68-3.56a18.79 18.79 0 0 1 2.59-.21H28v-3h-2.94a9.08 9.08 0 0 0-2.1.25 9.19 9.19 0 0 0-5.88 4.52ZM8 21.18c3.42.46 6.17 1.78 7.69 3.56a9.18 9.18 0 0 0-4.94-5.89 8.77 8.77 0 0 0-1.75-.6A9.08 9.08 0 0 0 6.94 18H4v3h1.43a18.54 18.54 0 0 1 2.57.18Z"></path>
-                </svg>
-                <p>100</p>
-            </div>
-        </div>
-        <div class="flex flex-row justify-content-around mb-3">
-            <button type="button" class="btn btn-danger" id="deleteCourse">Delete</button>
-            <button class="btn btn-warning" id="editCourse">Edit</button>
-        </div>
-    </div>
+<% if (loggedInUser.role==='faculty') { %>
+    <button class="m-3 btn btn-warning">View Report</button>
+    <button id="addCourse" class="m-3 btn btn-success" >Add Course</button>
+        <!--  add-course container  -->
+    <div class="popup-container">
+        <div class="popup flex">
     
-
+                <form action="/addcourse" method="post">
+                    <div>
+                        <label for="coursename" class="font-medium">Course Name</label>
+                        <input type="text" class="border-2 border-slate-400 font-medium text-slate-900 rounded p-2 w-full my-3" name="coursename" id="">
+                    </div>
     
-   <% for( let i = 0; i < availablecourses.length; i++ ) { %>
-    <div class="flex flex-col border border-1 p-4">
-        <h3 class="mx-auto text-lg font-bold my-1"><%= availablecourses[i].coursename %></h3>
-        <div class="flex flex-row items-center justify-between my-4">
-            <h3>Author Name</h3>
-            <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="20" height="20">
-                    <path d="M16 12a5 5 0 1 1 5-5 5 5 0 0 1-5 5Zm0 10.68a10 10 0 0 1 6.73-5.4h.05a7 7 0 0 0-13.56 0 10 10 0 0 1 6.78 5.4ZM26.57 22a17.67 17.67 0 0 0-2.45.17c-4.27.58-7.54 2.63-8 5.16A3.42 3.42 0 0 0 16 28a3.42 3.42 0 0 0-.07-.71c-.51-2.53-3.78-4.58-8-5.16a17.67 17.67 0 0 0-2.5-.13H2v8h28v-8Zm-9.49.77a9 9 0 0 0-.78 2c1.51-1.78 4.26-3.1 7.68-3.56a18.79 18.79 0 0 1 2.59-.21H28v-3h-2.94a9.08 9.08 0 0 0-2.1.25 9.19 9.19 0 0 0-5.88 4.52ZM8 21.18c3.42.46 6.17 1.78 7.69 3.56a9.18 9.18 0 0 0-4.94-5.89 8.77 8.77 0 0 0-1.75-.6A9.08 9.08 0 0 0 6.94 18H4v3h1.43a18.54 18.54 0 0 1 2.57.18Z"></path>
-                </svg>
-                <p>100</p>
-            </div>
-        </div>
-        
-            <div class="flex flex-row justify-content-around mb-3">
-                    <!-- delete course -->
-                     <!-- acctually fetch delete has to be performed without form tag but done temporarily -->
-                <form action="/addchapter" method="get">
-                    <button class="btn btn-danger" >Delete</button>
+                    <div>
+                        <label for="description" class="font-medium">Description</label>
+                        <textarea class="border-2 border-slate-400 font-medium text-slate-900 rounded p-2 w-full my-3 h-32 resize-none" name="description" id="description"></textarea>                </div>
+                    <div class="flex justify-content-between">
+                        <button id="closeButton" class="m-3 btn btn-danger">Cancel</button>
+                        <button type="submit" class="m-3 btn btn-success">Submit</button>
+                    </div>
                 </form>
-                    <!-- edit course -->
-                    <button class="btn btn-warning" id="editCourse" onclick="window.location.href='/addchapter/<%=availablecourses[i].id %>'">Edit</button>
-
-                    
-            </div>
+                
+        </div>
     </div>
-   <% } %>
+    <p class="text-2xl font-medium ml-5 mb-2">Your Courses</p>
+    <div class="container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-2">        
+       <% for( let i = 0; i < availablecourses.length; i++ ) { %>
+        <div class="flex flex-col border border-1 p-4">
+            <h3 class="mx-auto text-lg font-bold my-1"><%= availablecourses[i].coursename %></h3>
+            <div class="flex flex-row items-center justify-between my-4">
+                <h3>Author Name</h3>
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="20" height="20">
+                        <path d="M16 12a5 5 0 1 1 5-5 5 5 0 0 1-5 5Zm0 10.68a10 10 0 0 1 6.73-5.4h.05a7 7 0 0 0-13.56 0 10 10 0 0 1 6.78 5.4ZM26.57 22a17.67 17.67 0 0 0-2.45.17c-4.27.58-7.54 2.63-8 5.16A3.42 3.42 0 0 0 16 28a3.42 3.42 0 0 0-.07-.71c-.51-2.53-3.78-4.58-8-5.16a17.67 17.67 0 0 0-2.5-.13H2v8h28v-8Zm-9.49.77a9 9 0 0 0-.78 2c1.51-1.78 4.26-3.1 7.68-3.56a18.79 18.79 0 0 1 2.59-.21H28v-3h-2.94a9.08 9.08 0 0 0-2.1.25 9.19 9.19 0 0 0-5.88 4.52ZM8 21.18c3.42.46 6.17 1.78 7.69 3.56a9.18 9.18 0 0 0-4.94-5.89 8.77 8.77 0 0 0-1.75-.6A9.08 9.08 0 0 0 6.94 18H4v3h1.43a18.54 18.54 0 0 1 2.57.18Z"></path>
+                    </svg>
+                    <p>100</p>
+                </div>
+            </div>
+            
+                <div class="flex flex-row justify-content-around mb-3">
+                        <!-- delete course -->
+                         <!-- acctually fetch delete has to be performed without form tag but done temporarily -->
+                    <form action="/addchapter" method="get">
+                        <button class="btn btn-danger" >Delete</button>
+                    </form>
+                        <!-- edit course -->
+                        <button class="btn btn-warning" id="editCourse" onclick="window.location.href='/addchapter/<%=availablecourses[i].id %>'">Edit</button>
     
-
-   
-    
-
-    
-
-    
-
-</div> 
+                        
+                </div>
+        </div>
+       <% } %>
+    </div> 
+<% } %>
