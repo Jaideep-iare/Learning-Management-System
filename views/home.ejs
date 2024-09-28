@@ -16,13 +16,16 @@
 <body>
     <%- include("header.ejs") %>
 
-    <h1 class="text-2xl font-bold m-3">Welcome Jane Doe</h1>
+    <h1 class="text-2xl font-bold m-3"><%= loggedInUser.name %></h1>
 
     <% var availablecourses = availablecourses %>
     <% var loggedInUser = loggedInUser %>
+    <% var enrolledcourses = enrolledcourses %>
+
     <%- include("facultycourses.ejs",{availablecourses:availablecourses, loggedInUser:loggedInUser}) %>
 
-    <%- include("enrolledcourses.ejs") %>
+    <%- include("enrolledcourses.ejs",{enrolledcourses:enrolledcourses}) %>
+
     <%- include("availablecourses.ejs",{availablecourses:availablecourses }) %>
 
     
