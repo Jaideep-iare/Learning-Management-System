@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       User.hasMany(models.Course, {
+        as: 'courses',  //alias 
         foreignKey: "facultyid",
       });
       User.hasMany(models.Enrollment, {
@@ -19,7 +20,15 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.Progress, {
         foreignKey: "studentid",
       });
+
     }
+    static findFacultyNameById(availableCourses){
+      return this.findAll({
+      where:{
+        id: availableCourses.facultyid
+      }
+    })
+  }
   }
   User.init(
     {
