@@ -82,13 +82,18 @@ passport.deserializeUser((id, done) => {
   //home page
 app.get("/home",connectEnsureLogin.ensureLoggedIn(), async(req,res)=>{
     const loggedInUser = req.user;
-    const availablecourses = await Course.findAvailableCourse();
-    // console.log(availablecourses);
+    const facultyCourses = await Course.findFacultyCourse(loggedInUser);
+    const availableCourses = await Course.findAvailableCourse(); 
+    const enrolledcourses = await Enrollment.findEnrolledCourses(loggedInUser)
+    console.log(availableCourses)
     if (req.accepts("html")){
         res.render("home",{
             title: "Home-Learning Management system",
-            availablecourses,
-            loggedInUser
+            availableCourses,
+            loggedInUser,
+            facultyCourses,
+            enrolledcourses
+
         });
     }else{
         console.log("cannot accept the html");
@@ -98,19 +103,57 @@ app.get("/home",connectEnsureLogin.ensureLoggedIn(), async(req,res)=>{
 
 
 //enrolled course details page
-app.get("/enrolled",connectEnsureLogin.ensureLoggedIn(), (req,res)=>{
+app.get("/enrolled/:id",connectEnsureLogin.ensureLoggedIn(), (req,res)=>{
     res.render("enrolled",{
         title: "Course Name"
     });
 })
 
+// enroll to the course on enroll button
+app.post("/enroll/:courseId", connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
+  try {
+    const courseId = req.params.courseId;
+    const studentId = req.user.id; 
+    const enrollmentStatus = 'enrolled'; // Default status when enrolling
+    const initialProgress = 0; // Start progress at 0%
+
+    // Check if the student is already enrolled in the course
+    const existingEnrollment = await Enrollment.findOne({
+      where: {
+        studentid: studentId,
+        courseid: courseId
+      }
+    });
+
+    if (existingEnrollment) {
+      return res.status(400).send("You are already enrolled in this course.");
+    }
+
+    // Create a new enrollment record
+    await Enrollment.create({
+      studentid: studentId,
+      courseid: courseId,
+      status: enrollmentStatus,
+      progress: initialProgress
+    });
+
+    res.redirect("/home"); // Redirect to home or enrolled courses page
+  } catch (error) {
+    console.error("Error enrolling in course:", error);
+    res.status(500).send("An error occurred while enrolling in the course.");
+  }
+});
+
+
 //add chapter to database
-app.post("/addcourse",connectEnsureLogin.ensureLoggedIn(), async(req,res)=>{
+app.post("/addcourse/:id",connectEnsureLogin.ensureLoggedIn(), async(req,res)=>{
     try {
         const newcourse = await Course.create({
             coursename: req.body.coursename,
             description: req.body.description,
+            facultyid: req.params.id
         });
+        res.redirect('/home')
         // console.log("New course added is",newcourse);
     } catch (error) {
         console.error(error);
@@ -175,7 +218,6 @@ app.post("/addchapter/:id",connectEnsureLogin.ensureLoggedIn(),  async (req, res
 //addpage to the chapter of course
 app.get("/addpage/:id",connectEnsureLogin.ensureLoggedIn(),  async(req,res)=>{
     const chapterId = req.params.id;
-    console.log("Get Request page add for chapter id",chapterId)
     res.render("addpage",{
         title: "Module Name",
         chapterId
@@ -196,28 +238,31 @@ app.get("/changepassword",connectEnsureLogin.ensureLoggedIn(), (req,res)=>{
     });
 })
 
-app.post("/addpage/:id",connectEnsureLogin.ensureLoggedIn(),  async(req, res) => {
-
+app.post("/addpage/:id", connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
+  try {
     const pageName = req.body.pagename;
-    const formattedText = req.body.content; //Rich Text content from the add page
+    const formattedText = req.body.content; // Rich Text content from the add page
     const chapterId = req.params.id;
-    // console.log("Received formatted text:", formattedText, "pagename",pageName, "chapterid",chapterId);
 
-    //add page details to Pages table
-    const newPage = await Page.create({
-        pagename: pageName,
-        content: formattedText,
-        chapterid: chapterId
-    })
-    console.log("New page added", newPage)
-  
-    // Process or save the formattedText as needed
-    res.render("addpage",{
-      text:formattedText,
-      title: "Module Name",
-      chapterId
-      });
-  });
+    // Add page details to Pages table
+    /*const newPage = */
+    await Page.create({
+      pagename: pageName,
+      content: formattedText,
+      chapterid: chapterId,
+    });
+    // Find the courseId by querying the Chapter table using chapterId after post
+    const chapter = await Chapter.findByPk(chapterId);
+    // Redirect back to the previous page i.e, addchapter
+    res.redirect(`/addchapter/${chapter.courseid}`);
+  } catch (error) {
+    console.error("Error adding page:", error);
+
+    res.status(500).send("An error occurred while adding the page. Please try again.");
+
+  }
+});
+
 
 
 
@@ -288,7 +333,7 @@ app.get("/signout", (req, res, next) => {
       if (err) {
         return next(err);
       }
-      res.redirect("/");
+      res.redirect("/login");
     });
   });
 
