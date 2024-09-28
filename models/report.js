@@ -18,6 +18,14 @@ module.exports = (sequelize, DataTypes) => {
     {
       totalstudents: DataTypes.INTEGER,
       completedstudents: DataTypes.INTEGER,
+      courseid:{
+        type: DataTypes.INTEGER,
+         allowNull: false, // Make sure that each course is assigned to a faculty
+        references: {
+        model: 'Courses', // Assumes that the user model is stored in the 'Users' table
+        key: 'id',
+      },
+      }
     },
     {
       sequelize,

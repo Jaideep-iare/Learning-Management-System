@@ -20,6 +20,22 @@ module.exports = (sequelize, DataTypes) => {
   Progress.init(
     {
       iscompleted: DataTypes.BOOLEAN,
+      studentid:{
+        type: DataTypes.INTEGER,
+         allowNull: false, // Make sure that each course is assigned to a faculty
+        references: {
+        model: 'Users', // Assumes that the user model is stored in the 'Users' table
+        key: 'id',
+      },
+      },
+      pageid:{
+        type: DataTypes.INTEGER,
+         allowNull: false, // Make sure that each course is assigned to a faculty
+        references: {
+        model: 'Pages', // Assumes that the user model is stored in the 'Users' table
+        key: 'id',
+      },
+      }
     },
     {
       sequelize,

@@ -27,8 +27,22 @@ module.exports = (sequelize, DataTypes) => {
   }
   Page.init(
     {
-      pagename: DataTypes.STRING,
-      content: DataTypes.TEXT,
+      pagename: {
+        type : DataTypes.STRING,
+        allowNull: false,
+      },
+      content: {
+        type: DataTypes.TEXT,
+        allowNull: false, 
+      },
+      chapterid:{
+        type: DataTypes.INTEGER,
+         allowNull: false, // Make sure that each course is assigned to a faculty
+        references: {
+        model: 'Chapters', // Assumes that the user model is stored in the 'Users' table
+        key: 'id',
+      },
+      }
     },
     {
       sequelize,
