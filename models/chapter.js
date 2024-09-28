@@ -25,8 +25,22 @@ module.exports = (sequelize, DataTypes) => {
 
   }
   Chapter.init({
-    chaptername: DataTypes.STRING,
-    chapterdescription: DataTypes.TEXT,
+    chaptername: {
+      type : DataTypes.STRING,
+      allowNull: false,
+    },
+    chapterdescription: {
+      type: DataTypes.TEXT,
+      allowNull: false, 
+    },
+    courseid:{
+      type: DataTypes.INTEGER,
+       allowNull: false, // Make sure that each course is assigned to a faculty
+      references: {
+      model: 'Courses', // Assumes that the user model is stored in the 'Users' table
+      key: 'id',
+    },
+    }
   }, {
     sequelize,
     modelName: 'Chapter',
