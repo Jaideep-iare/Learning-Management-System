@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
             include: [
               {
                 model: sequelize.models.User, // Include author details
-                as: 'author', //  alias association
+                as: 'faculty', //  alias association
                 attributes: ['name'], // Fetch only the author's name
               }
             ],
