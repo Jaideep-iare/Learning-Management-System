@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { Op } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Course extends Model {
     /**
@@ -32,6 +33,22 @@ module.exports = (sequelize, DataTypes) => {
             attributes: ['name'] // Only include faculty's name
          }
       });
+   }
+
+   static getNotEnrolledCourses(enrolledcourseIds){
+    return this.findAll({
+      where:{
+        id:{
+          [Op.notIn]:enrolledcourseIds
+        },
+      },
+        include: {
+          model: sequelize.models.User, // Include faculty details
+          as: 'faculty', // Assuming 'faculty' is the alias for the User model
+          attributes: ['name'] // Fetch faculty's name
+        }
+
+    });
    }
    
 
