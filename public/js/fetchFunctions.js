@@ -1,17 +1,23 @@
 
+// eslint-disable-next-line no-unused-vars
+function updatePageStatus(id){
+    const checkbox = document.getElementById(`page-checkbox-${id}`);
+    const isCompleted = checkbox.checked;
 
-// document.getElementById('editCourse').addEventListener('click', function() {
-//     // Make a GET request to the server-side route /addchapter
-//     fetch('/addchapter')
-//         .then(response => {
-//             if (response.ok) {
-//                 // If the response is successful, reload the page
-//                 window.location.reload();
-//             } else {
-//                 throw new Error('Network response was not ok.');
-//             }
-//         })
-//         .catch(error => {
-//             console.error('Error:', error);
-//         });
-// });
+    fetch(`/setPageStatus/${id}`,{
+        method:"post",
+        headers:{"Content-Type": "application/json"},
+        body: JSON.stringify({ completed: isCompleted })  // Sending the checkbox status
+    })
+    .then((res)=>{
+        if(res.ok){
+            // window.location.reload();
+            console.log("Page status updated successfully!");
+        } else {
+            console.log("Error updating status");
+        }
+    })
+    .catch((err)=>{
+        console.log(err)
+    })
+}
