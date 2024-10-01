@@ -16,30 +16,49 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "pageid",
       });
     }
+    static getCompletedPagesCount(allPagesIdsForCourse, studentid, iscompleted){
+      return this.count({
+          where:{ 
+            pageid: allPagesIdsForCourse,
+            studentid,
+            iscompleted
+          }
+    })
+    }
+    
   }
   Progress.init(
     {
-      iscompleted: DataTypes.BOOLEAN,
+      iscompleted: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false  
+      },
       studentid:{
         type: DataTypes.INTEGER,
-         allowNull: false, // Make sure that each course is assigned to a faculty
+        allowNull: false,
         references: {
-        model: 'Users', // Assumes that the user model is stored in the 'Users' table
-        key: 'id',
-      },
+          model: 'Users', // Assumes that the User model is stored in the 'Users' table
+          key: 'id',
+        },
       },
       pageid:{
         type: DataTypes.INTEGER,
-         allowNull: false, // Make sure that each course is assigned to a faculty
+        allowNull: false,
         references: {
-        model: 'Pages', // Assumes that the user model is stored in the 'Users' table
-        key: 'id',
+          model: 'Pages', // Assumes that the Page model is stored in the 'Pages' table
+          key: 'id',
+        },
       },
-      }
     },
     {
       sequelize,
       modelName: "Progress",
+      indexes: [
+        {
+          unique: true,
+          fields: ['studentid', 'pageid'], // Composite unique => both studentid and pageid as a pair should be unique for upsert
+        },
+      ],
     }
   );
   return Progress;
