@@ -1,5 +1,4 @@
 
-
  // Ensure DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     const addCourseButton = document.getElementById("addCourse");
@@ -7,6 +6,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeButton = document.getElementById("closeButton");
     const profileDetails = document.getElementsByClassName("profile-details")[0];
     const chapters = document.querySelectorAll(".chapter-name");
+    const progressBars = document.querySelectorAll('.progress-bar');
+
+
+    //change progressbar percentage width as it is causing issue while in ejs styles
+    progressBars.forEach(bar => {
+        const percentage = bar.getAttribute('data-percentage');
+        if(percentage!=0){
+            bar.style.width = `${percentage}%`;
+        }
+        else{
+            bar.style.width = `${7}%`;
+        }
+        
+    });
 
     // Toggle the add course option visibility
     function displayAddCourse() {
@@ -79,3 +92,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+
