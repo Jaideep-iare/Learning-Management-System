@@ -8,7 +8,10 @@
         <script src="https://cdn.tailwindcss.com"></script>
     </head>
     <body>
-        <%- include("header.ejs") %>
+            <!-- header without search and profile -->
+        <header class="header bg-primary d-flex flex-row justify-content-center align-items-center gap-3">
+            <h1 class="text-3xl font-semibold text-white">Learning Management System</h1>
+        </header>
         <div class="grid grid-cols-6">
             <div class="col-start-3 col-span-2">
                 <h1 class="text-2xl font-bold mt-3">Login to your account</h1>
@@ -17,13 +20,13 @@
                     
                     <div class="py-3">
                         <label for="email">Email:</label>
-                        <input type="email" name="email" id="" class="border-2 border-slate-400 text-grey-900 rounded p-2 w-full">
+                        <input type="email" name="email"  class="border-2 border-slate-400 text-grey-900 rounded p-2 w-full">
                     </div>
                     
 
                     <div class="py-3">
                         <label for="password">Password:</label>
-                        <input type="password" name="password" id="" class="border-2 border-slate-400 text-grey-900 rounded p-2 w-full">
+                        <input type="password" name="password"  class="border-2 border-slate-400 text-grey-900 rounded p-2 w-full">
                     </div>
 
 
@@ -31,7 +34,7 @@
                         <button type="submit" class="text-white bg-primary hover:bg-green-800 font-medium rounded px-5 py-2">Sign in</button>
                     </div>
                 </form>
-                <div class="bg-gray-100 fit-content mt-3">
+                <div class="bg-gray-100 fit-content mt-3 rounded">
                     <p class="p-2">Create account <a href="/signup" class="text-green-600">Signup now</a></p>
                 </div>
                 
