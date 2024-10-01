@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-const express = require("express")
+const express = require("express");
 const path = require("path");
 
 
@@ -18,7 +18,9 @@ app.set("view engine","ejs")
 //files and paths
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname,"public")));
-const {Course, Chapter, Enrollment, Progress, Page, Report, User } = require("./models")
+const {Course, Chapter, Enrollment, Progress, Page, Report, User, sequelize } = require("./models");
+const { Console } = require("console");
+const { where } = require("sequelize");
 
 // Parse URL-encoded bodies mostly rich content like in quill editor as key value pairs
 app.use(express.urlencoded({ extended: true }));
@@ -81,32 +83,118 @@ passport.deserializeUser((id, done) => {
 
   //home page
 app.get("/home",connectEnsureLogin.ensureLoggedIn(), async(req,res)=>{
-    const loggedInUser = req.user;
-    const facultyCourses = await Course.findFacultyCourse(loggedInUser);
-    const availableCourses = await Course.findAvailableCourse(); 
-    const enrolledcourses = await Enrollment.findEnrolledCourses(loggedInUser)
-    console.log(availableCourses)
-    if (req.accepts("html")){
-        res.render("home",{
-            title: "Home-Learning Management system",
-            availableCourses,
-            loggedInUser,
-            facultyCourses,
-            enrolledcourses
+    try {
+      const loggedInUser = req.user;
+      const facultyCourses = await Course.findFacultyCourse(loggedInUser);
+      const availableCourses = await Course.findAvailableCourse(); 
+      const enrolledcourses = await Enrollment.findEnrolledCourses(loggedInUser);
+  
+      // Extract courseId from enrolled courses
+      const enrolledcourseIds = enrolledcourses.map(enrolled=> enrolled.courseid)
+  
+        // Find courses that the user has not enrolled in
+      const notEnrolledCourses = await Course.getNotEnrolledCourses(enrolledcourseIds);
 
-        });
-    }else{
-        console.log("cannot accept the html");
+      //find the count of enrollments for each course
+
+      const allCourses = [await Course.findAll()]
+      // object to store enrollment counts for each course
+      var courseEnrollmentCounts = {};
+      var coursePageStatus = {}
+      for (const courses of allCourses) {
+        for(const course of courses){
+          // Ensure course is defined
+          if (course && course.id) {
+            // Count enrollments for the current course
+            const count = await Enrollment.count({
+              where: {
+                courseid: course.id,
+              },
+            });
+            // Store the count using course.id as the key
+            courseEnrollmentCounts[course.id] = count;
+
+            //now to find course completed percentage
+            const totalChaptersData = await Chapter.getChapters(course.id);
+            const allChaptersIdsForCourse = totalChaptersData.map((chapter)=>chapter.id);
+
+            // Get the page count for all chapters of the course
+            const totalPagesData = await Page.getPagesByChapterIds(allChaptersIdsForCourse);
+            const allPagesIdsForCourse = totalPagesData.map((page) => page.id);
+            const totalPages = await Page.getPagesCountByChapterIds(allChaptersIdsForCourse);
+            const completedPages = await Progress.getCompletedPagesCount(allPagesIdsForCourse, loggedInUser.id, true)
+            
+            // Calculate the completion percentage or status
+            const completionPercentage = totalPages > 0 ? Math.floor((completedPages / totalPages) * 100): 0;
+            coursePageStatus[course.id] = {
+              completedPages,
+              totalPages,
+              completionPercentage,
+              status: completionPercentage === 100 ? 'Completed' : 'In Progress',
+            };
+            
+          }
+      }
+      }
+      const allCoursesOfSite = await Course.findAll()
+      
+      if (req.accepts("html")){
+          res.render("home",{
+              title: "Home-Learning Management system",
+              availableCourses,
+              loggedInUser,
+              facultyCourses,
+              enrolledcourses,
+              notEnrolledCourses,
+              courseEnrollmentCounts,
+              coursePageStatus,
+              allCoursesOfSite
+  
+          });
+      }else{
+          console.log("cannot accept the html");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).send("Internal Server Error");
     }
     
 })
 
 
 //enrolled course details page
-app.get("/enrolled/:id",connectEnsureLogin.ensureLoggedIn(), (req,res)=>{
-    res.render("enrolled",{
-        title: "Course Name"
-    });
+app.get("/enrolled/:id",connectEnsureLogin.ensureLoggedIn(), async(req,res)=>{
+  const courseId = req.params.id;
+    
+      try {
+          
+          
+          const courseDetails = await Course.findByPk(courseId);
+          const getChaptersByCourse = await Chapter.getChapters(courseId); // Fetch chapters for this course
+          const totalChaptersData = await Chapter.getChapters(courseId);
+          const allChaptersIdsForCourse = totalChaptersData.map((chapter)=>chapter.id);
+          const allPagesOfCourse = await Page.getProgressPagesByUserId(allChaptersIdsForCourse,req.user.id);
+          // const completedPages = allPagesOfCourse.Progress.map((progress)=>progress.iscompleted)
+          // console.log(completedPages)
+          for(var i=0;i<allPagesOfCourse.length;i++){
+            if(allPagesOfCourse[i].Progresses && allPagesOfCourse[i].Progresses.iscompleted){
+            console.log("pageid",allPagesOfCourse[i].id,"comp",allPagesOfCourse[i].Progresses)
+            }
+          }
+  
+          res.render("enrolled",{
+            title: "Course Name",
+            getChaptersByCourse,
+            allPagesOfCourse,
+            courseDetails,
+            student: req.user.id
+        });
+      
+      }catch (error) {
+        console.error(error);
+        res.status(500).send('Error fetching chapters and pages');
+    }
+    
 })
 
 // enroll to the course on enroll button
@@ -143,6 +231,9 @@ app.post("/enroll/:courseId", connectEnsureLogin.ensureLoggedIn(), async (req, r
     res.status(500).send("An error occurred while enrolling in the course.");
   }
 });
+
+
+
 
 
 //add chapter to database
@@ -224,6 +315,26 @@ app.get("/addpage/:id",connectEnsureLogin.ensureLoggedIn(),  async(req,res)=>{
     });
 })
 
+app.post("/setPageStatus/:id", async (req, res) => {
+  const studentid = req.user.id;
+  const pageid = req.params.id;
+  const iscompleted = req.body.completed ? true : false;
+
+  try {
+    await Progress.upsert({
+      studentid,
+      pageid,
+      iscompleted,
+    });
+    res.status(200).send("Progress updated successfully.");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error updating progress.");
+  }
+});
+
+
+
 //viewreport
 app.get("/viewreport",connectEnsureLogin.ensureLoggedIn(), (req,res)=>{
     res.render("viewreport",{
@@ -232,9 +343,11 @@ app.get("/viewreport",connectEnsureLogin.ensureLoggedIn(), (req,res)=>{
 })
 
 //change password
-app.get("/changepassword",connectEnsureLogin.ensureLoggedIn(), (req,res)=>{
+app.get("/changepassword",connectEnsureLogin.ensureLoggedIn(), async(req,res)=>{
+  const allCoursesOfSite = await Course.findAll()
     res.render("changepassword",{
-        title: "Change password"
+        title: "Change password",
+        allCoursesOfSite
     });
 })
 
@@ -271,7 +384,13 @@ app.post("/addpage/:id", connectEnsureLogin.ensureLoggedIn(), async (req, res) =
 app.get("/available/:id",connectEnsureLogin.ensureLoggedIn(),  async(req,res)=>{
     const courseId = req.params.id;
     const getChaptersByCourse = await Chapter.getChapters(courseId); 
-    const course = await Course.findByPk(courseId);
+    const course = await Course.findByPk(courseId,{
+      include:{
+        model: sequelize.models.User,
+        as: 'faculty',// The alias for the faculty association
+        attrtbutes:['name'],// Only include the faculty's name
+      }
+    });
     res.render("available",{
         title: "Course Name",
         getChaptersByCourse,
