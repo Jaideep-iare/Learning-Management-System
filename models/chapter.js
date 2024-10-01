@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Chapter extends Model {
     /**
@@ -12,39 +10,40 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Chapter.hasMany(models.Page, {
-        foreignKey: 'chapterid'
+        foreignKey: "chapterid",
       });
       Chapter.belongsTo(models.Course, {
-        foreignKey: 'courseid'
+        foreignKey: "courseid",
       });
     }
 
-    static getChapters(courseId){
+    static getChapters(courseId) {
       return Chapter.findAll({ where: { courseid: courseId } });
     }
-  
-
   }
-  Chapter.init({
-    chaptername: {
-      type : DataTypes.STRING,
-      allowNull: false,
+  Chapter.init(
+    {
+      chaptername: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      chapterdescription: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      courseid: {
+        type: DataTypes.INTEGER,
+        allowNull: false, // Make sure that each course is assigned to a faculty
+        references: {
+          model: "Courses", // Assumes that the user model is stored in the 'Users' table
+          key: "id",
+        },
+      },
     },
-    chapterdescription: {
-      type: DataTypes.TEXT,
-      allowNull: false, 
-    },
-    courseid:{
-      type: DataTypes.INTEGER,
-       allowNull: false, // Make sure that each course is assigned to a faculty
-      references: {
-      model: 'Courses', // Assumes that the user model is stored in the 'Users' table
-      key: 'id',
-    },
+    {
+      sequelize,
+      modelName: "Chapter",
     }
-  }, {
-    sequelize,
-    modelName: 'Chapter',
-  });
+  );
   return Chapter;
 };
