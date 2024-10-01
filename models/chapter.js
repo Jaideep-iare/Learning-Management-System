@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     static getChapters(courseId){
       return Chapter.findAll({ where: { courseid: courseId } });
     }
+  
 
   }
   Chapter.init({
