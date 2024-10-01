@@ -15,14 +15,39 @@ module.exports = (sequelize, DataTypes) => {
       Page.hasMany(models.Progress, {
         foreignKey: "pageid",
       });
+      Page.hasMany(models.Progress, 
+        { foreignKey: 'pageid' 
+
+        });
     }
 
-    static getPages(getChaptersByCourse) {
+    static getProgressPagesByUserId(allChaptersIdsForCourse,userId) {
       return this.findAll({
         where: {
-          chapterid: getChaptersByCourse.map((ch) => ch.id),
+          chapterid: allChaptersIdsForCourse,
         },
+        include: [{
+          model: sequelize.models.Progress,
+          required: false, // Left join (show pages even if no progress)
+          where: { studentid: userId }, // Get progress for the logged-in student
+          attributes: ['iscompleted'] // Only fetch the iscompleted field
+          
+        }]
       });
+    }
+    static getPagesByChapterIds(chapterids) {
+      return this.findAll({
+        where: { chapterid: chapterids },
+        attributes: ['id', 'chapterid'], // Select page 'id' and associated 'chapterid'
+      });
+    }
+
+    static getPagesCountByChapterIds(allChaptersIdsForCourse){
+      return Page.count({
+        where:{
+          chapterid: allChaptersIdsForCourse
+        }
+      })
     }
   }
   Page.init(
