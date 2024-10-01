@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%=title%></title>
-  <link rel="stylesheet" href="./css/styles.css">
-  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">    
 </head>
@@ -26,8 +26,9 @@
                   </div>
               </div>
               <div class="flex flex-row justify-content-around mb-3">
-                  <button class="btn btn-success" onclick="enrolledCourseDetails()">Enroll</button>
-                  <!-- <button class="btn bg-purple-600">Completed</button> -->
+                  <form action="/enroll/<%= course.id %>" method="post">
+                    <button class="btn btn-success">Enroll</button>
+                  </form>
               </div>
             </div>
           </div>

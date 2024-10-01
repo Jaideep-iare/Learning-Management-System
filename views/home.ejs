@@ -14,19 +14,38 @@
     
 </head>
 <body>
-    <%- include("header.ejs") %>
+    <% var allCoursesOfSite = allCoursesOfSite %>
+    <%- include("header.ejs",{allCoursesOfSite:allCoursesOfSite}) %>
 
-    <h1 class="text-2xl font-bold m-3"><%= loggedInUser.name %></h1>
+    <h1 class="text-2xl font-bold m-3">Welcome <%= loggedInUser.name %>!</h1>
 
     <% var availablecourses = availablecourses %>
     <% var loggedInUser = loggedInUser %>
     <% var enrolledcourses = enrolledcourses %>
+    <% var notEnrolledCourses = notEnrolledCourses %>
+    <% var facultyCourses = facultyCourses %>
+    <% var courseEnrollmentCounts = courseEnrollmentCounts %>
+    <% var coursePageStatus = coursePageStatus %>
 
-    <%- include("facultycourses.ejs",{availablecourses:availablecourses, loggedInUser:loggedInUser}) %>
+            <!-- faculty course -->
+    <% if (loggedInUser.role==='faculty') { %>
+        <%- include("facultycourses.ejs",{facultyCourses:facultyCourses, loggedInUser:loggedInUser}) %>
+    <% } %>
+        <!-- learn enrolled courses -->
+    <% if (loggedInUser.role==='student' && enrolledcourses.length>0) { %>
+        <%- include("enrolledcourses.ejs",{
+            enrolledcourses:enrolledcourses,
+            courseEnrollmentCounts:courseEnrollmentCounts,
+            coursePageStatus: coursePageStatus
+          
+            }) %>
+    <% } %>
 
-    <%- include("enrolledcourses.ejs",{enrolledcourses:enrolledcourses}) %>
-
-    <%- include("availablecourses.ejs",{availablecourses:availablecourses }) %>
+        <!-- not enrolled course -->
+    <%- include("availablecourses.ejs",{
+        notEnrolledCourses:notEnrolledCourses,
+        courseEnrollmentCounts:courseEnrollmentCounts 
+        }) %>
 
     
    
