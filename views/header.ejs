@@ -1,6 +1,6 @@
 <header class="header bg-primary d-flex flex-row justify-content-center align-items-center gap-3">
-    <h1 class="text-3xl font-semibold text-white">Learning Management System</h1>
-    <input class="border border-gray-300 text-gray-900 rounded p-2 w-1/3" type="search" placeholder="Search for the course" list="my-list">
+    <h1 class="text-3xl font-semibold text-white mr-5 ml-2">Learning Management System</h1>
+    <input class="border border-gray-300 text-gray-900 rounded p-2 w-1/3 ml-5 my-2" type="search" placeholder="Search for the course" list="my-list">
     <datalist id="my-list" >
         <% for( let i = 0; i < allCoursesOfSite.length; i++ ) { %>
             <option ><%= allCoursesOfSite[i].dataValues.coursename %></option>
@@ -14,7 +14,7 @@
         </div>
         <div class="profile-details border bg-slate-700 rounded shadow-lg shadow-slate-700/50">
             <ul class="p-2">
-                <li class="text-white py-1  cursor-pointer">My Profile</li>
+                <li class="text-white py-1  cursor-pointer" onclick="window.location.href = `/profile`">My Profile</li>
                 <li class="text-white py-1  cursor-pointer" onclick="window.location.href = `/changepassword`">Change Password</li>
                 <li class="text-white py-1  cursor-pointer" onclick="window.location.href = `/signout`">Sign Out</li>
             </ul>
