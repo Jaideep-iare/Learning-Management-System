@@ -1,7 +1,7 @@
-#editor-container{
-  height: 30vh; 
-  border: 1px solid #ccc; 
-  overflow-y: auto; 
+#editor-container {
+  height: 30vh;
+  border: 1px solid #ccc;
+  overflow-y: auto;
   max-width: 100%;
 }
 
@@ -11,11 +11,11 @@ ol {
   list-style-type: none; /* Remove default list style */
 }
 
-ol>li {
+ol > li {
   counter-increment: item;
 }
 
-ol>li::before {
+ol > li::before {
   content: counter(item) ". "; /* Add numbering */
 }
 /* change the stylings of text as ul not working */
@@ -24,13 +24,13 @@ ul {
   padding-left: 0; /* Remove left padding */
 }
 
-ul>li {
+ul > li {
   position: relative; /* Position for the pseudo-element */
   padding-left: 20px; /* Space for the dot */
 }
 
-ul>li::before {
-  content: '\2022'; /* Add dot */
+ul > li::before {
+  content: "\2022"; /* Add dot */
   position: absolute; /* Positioning for the dot */
   left: 0; /* Align to the left */
   color: black; /* Change color if needed */
@@ -40,182 +40,181 @@ ul>li::before {
 
 /* General Editor Styles */
 .ql-editor {
-    box-sizing: border-box;
-    line-height: 1.42;
-    height: 100%;
-    overflow-y: auto;
-    padding: 12px 15px;
-    tab-size: 4;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-  }
-  
-  /* Bold, Italic, Underline */
-  .ql-editor strong {
-    font-weight: bold;
-  }
-  .ql-editor em {
-    font-style: italic;
-  }
-  .ql-editor u {
-    text-decoration: underline;
-  }
-  
-  /* Headers */
-  .ql-editor h1 {
-    font-size: 2em;
-  }
-  .ql-editor h2 {
-    font-size: 1.5em;
-  }
-  .ql-editor h3 {
-    font-size: 1.17em;
-  }
-  .ql-editor h4 {
-    font-size: 1.12em;
-  }
-  .ql-editor h5 {
-    font-size: 0.83em;
-  }
-  .ql-editor h6 {
-    font-size: 0.75em;
-  }
-  
-  /* Text Size */
-  .ql-size-small {
-    font-size: 0.75em;
-  }
-  .ql-size-large {
-    font-size: 1.5em;
-  }
-  .ql-size-huge {
-    font-size: 2.5em;
-  }
-  
-  /* Text Alignment */
-  .ql-align-right {
-    text-align: right;
-  }
-  .ql-align-center {
-    text-align: center;
-  }
-  .ql-align-justify {
-    text-align: justify;
-  }
-  
-  /* Lists */
-  .ql-editor ol, .ql-editor ul {
-    padding-left: 1.5em;
-  }
-  .ql-editor ol {
-    list-style-type: decimal;
-  }
-  .ql-editor ul {
-    list-style-type: disc;
-  }
-  
-  /* Indent */
-  .ql-indent-1 {
-    padding-left: 1em;
-  }
-  .ql-indent-2 {
-    padding-left: 2em;
-  }
-  .ql-indent-3 {
-    padding-left: 3em;
-  }
-  .ql-indent-4 {
-    padding-left: 4em;
-  }
-  .ql-indent-5 {
-    padding-left: 5em;
-  }
-  
-  /* Subscript and Superscript */
-  .ql-editor sub {
-    vertical-align: sub;
-    font-size: 0.75em;
-  }
-  .ql-editor sup {
-    vertical-align: super;
-    font-size: 0.75em;
-  }
-  
-  /* Blockquotes */
-  .ql-editor blockquote {
-    border-left: 4px solid #ccc;
-    margin-bottom: 5px;
-    margin-top: 5px;
-    padding-left: 16px;
-  }
-  
-  /* Code Block */
-  .ql-editor pre {
-    background-color: #f0f0f0;
-    padding: 10px;
-    border-radius: 5px;
-    font-family: monospace;
-  }
-  
-  /* Background and Text Colors */
-  .ql-bg-red {
-    background-color: #f28b82;
-  }
-  .ql-bg-green {
-    background-color: #ccff90;
-  }
-  .ql-bg-blue {
-    background-color: #a7ffeb;
-  }
-  .ql-color-red {
-    color: #e60000;
-  }
-  .ql-color-green {
-    color: #008a00;
-  }
-  .ql-color-blue {
-    color: #0066cc;
-  }
-  
-  /* Text Direction */
-  .ql-direction-rtl {
-    direction: rtl;
-  }
-  
-  /* Clean */
-  .ql-clean {
-    text-decoration: none;
-    font-weight: normal;
-    font-style: normal;
-  }
-  
+  box-sizing: border-box;
+  line-height: 1.42;
+  height: 100%;
+  overflow-y: auto;
+  padding: 12px 15px;
+  tab-size: 4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Bold, Italic, Underline */
+.ql-editor strong {
+  font-weight: bold;
+}
+.ql-editor em {
+  font-style: italic;
+}
+.ql-editor u {
+  text-decoration: underline;
+}
+
+/* Headers */
+.ql-editor h1 {
+  font-size: 2em;
+}
+.ql-editor h2 {
+  font-size: 1.5em;
+}
+.ql-editor h3 {
+  font-size: 1.17em;
+}
+.ql-editor h4 {
+  font-size: 1.12em;
+}
+.ql-editor h5 {
+  font-size: 0.83em;
+}
+.ql-editor h6 {
+  font-size: 0.75em;
+}
+
+/* Text Size */
+.ql-size-small {
+  font-size: 0.75em;
+}
+.ql-size-large {
+  font-size: 1.5em;
+}
+.ql-size-huge {
+  font-size: 2.5em;
+}
+
+/* Text Alignment */
+.ql-align-right {
+  text-align: right;
+}
+.ql-align-center {
+  text-align: center;
+}
+.ql-align-justify {
+  text-align: justify;
+}
+
+/* Lists */
+.ql-editor ol,
+.ql-editor ul {
+  padding-left: 1.5em;
+}
+.ql-editor ol {
+  list-style-type: decimal;
+}
+.ql-editor ul {
+  list-style-type: disc;
+}
+
+/* Indent */
+.ql-indent-1 {
+  padding-left: 1em;
+}
+.ql-indent-2 {
+  padding-left: 2em;
+}
+.ql-indent-3 {
+  padding-left: 3em;
+}
+.ql-indent-4 {
+  padding-left: 4em;
+}
+.ql-indent-5 {
+  padding-left: 5em;
+}
+
+/* Subscript and Superscript */
+.ql-editor sub {
+  vertical-align: sub;
+  font-size: 0.75em;
+}
+.ql-editor sup {
+  vertical-align: super;
+  font-size: 0.75em;
+}
+
+/* Blockquotes */
+.ql-editor blockquote {
+  border-left: 4px solid #ccc;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  padding-left: 16px;
+}
+
+/* Code Block */
+.ql-editor pre {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+  font-family: monospace;
+}
+
+/* Background and Text Colors */
+.ql-bg-red {
+  background-color: #f28b82;
+}
+.ql-bg-green {
+  background-color: #ccff90;
+}
+.ql-bg-blue {
+  background-color: #a7ffeb;
+}
+.ql-color-red {
+  color: #e60000;
+}
+.ql-color-green {
+  color: #008a00;
+}
+.ql-color-blue {
+  color: #0066cc;
+}
+
+/* Text Direction */
+.ql-direction-rtl {
+  direction: rtl;
+}
+
+/* Clean */
+.ql-clean {
+  text-decoration: none;
+  font-weight: normal;
+  font-style: normal;
+}
 
 .ql-toolbar {
-    display: flex;
-    padding: 8px;
-    max-width: 100%;
-    background-color: #f3f3f3;
-    border-bottom: 1px solid #ccc;
-    box-sizing: border-box;
-  }
-  
-  .ql-toolbar button {
-    background-color: white;
-    border: 1px solid #ccc;
-    padding: 5px;
-    cursor: pointer;
-  }
-  
-  .ql-toolbar button:hover {
-    background-color: #e0e0e0;
-  }
-  
-  .ql-toolbar .ql-active {
-    background-color: #ccc;
-  }
-  
-  .ql-toolbar select {
-    background-color: white;
-    border: 1px solid #ccc;
-  }
-  
+  display: flex;
+  padding: 8px;
+  max-width: 100%;
+  background-color: #f3f3f3;
+  border-bottom: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.ql-toolbar button {
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.ql-toolbar button:hover {
+  background-color: #e0e0e0;
+}
+
+.ql-toolbar .ql-active {
+  background-color: #ccc;
+}
+
+.ql-toolbar select {
+  background-color: white;
+  border: 1px solid #ccc;
+}

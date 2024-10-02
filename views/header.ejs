@@ -1,26 +1,64 @@
-<header class="header bg-primary d-flex flex-row justify-content-center align-items-center gap-3">
-    <h1 class="text-3xl font-semibold text-white mr-5 ml-2">Learning Management System</h1>
-    <input class="border border-gray-300 text-gray-900 rounded p-2 w-1/3 ml-5 my-2" type="search" placeholder="Search for the course" list="my-list">
-    <datalist id="my-list" >
-        <% for( let i = 0; i < allCoursesOfSite.length; i++ ) { %>
-            <option ><%= allCoursesOfSite[i].dataValues.coursename %></option>
-        <% } %>
-    </datalist>
-    <div class="profile-container"> 
-        <div class="profile-logo fit-content hover:bg-white hover:text-black hover:cursor-pointer hover:rounded">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-9 w-9">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-            </svg>
-        </div>
-        <div class="profile-details border bg-slate-700 rounded shadow-lg shadow-slate-700/50">
-            <ul class="p-2">
-                <li class="text-white py-1  cursor-pointer" onclick="window.location.href = `/profile`">My Profile</li>
-                <li class="text-white py-1  cursor-pointer" onclick="window.location.href = `/changepassword`">Change Password</li>
-                <li class="text-white py-1  cursor-pointer" onclick="window.location.href = `/signout`">Sign Out</li>
-            </ul>
-
-        </div>
+<header
+  class="header bg-primary d-flex flex-row justify-content-center align-items-center gap-3"
+>
+  <h1 class="text-3xl font-semibold text-white mr-5 ml-2">
+    Learning Management System
+  </h1>
+  <input
+    class="border border-gray-300 text-gray-900 rounded p-2 w-1/3 ml-5 my-2"
+    type="search"
+    placeholder="Search for the course"
+    list="my-list"
+  />
+  <datalist id="my-list">
+    <% for( let i = 0; i < allCoursesOfSite.length; i++ ) { %>
+    <option><%= allCoursesOfSite[i].dataValues.coursename %></option>
+    <% } %>
+  </datalist>
+  <div class="profile-container">
+    <div
+      class="profile-logo fit-content hover:bg-white hover:text-black hover:cursor-pointer hover:rounded"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="h-9 w-9"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+        />
+      </svg>
     </div>
+    <div
+      class="profile-details border bg-slate-700 rounded shadow-lg shadow-slate-700/50"
+    >
+      <ul class="p-2">
+        <li
+          class="text-white py-1 cursor-pointer"
+          onclick="window.location.href = `/profile`"
+        >
+          My Profile
+        </li>
+        <li
+          class="text-white py-1 cursor-pointer"
+          onclick="window.location.href = `/changepassword`"
+        >
+          Change Password
+        </li>
+        <li
+          class="text-white py-1 cursor-pointer"
+          onclick="window.location.href = `/signout`"
+        >
+          Sign Out
+        </li>
+      </ul>
+    </div>
+  </div>
 </header>
 <!-- Bootstrap Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>

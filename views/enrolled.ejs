@@ -1,98 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="csrf-token" content="<%=csrfToken%>">
-  <title><%=title%></title>
-  
-  <!--  paths for local stylesheets and scripts -->
-  <link rel="stylesheet" href="/css/styles.css">
-  <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="<%=csrfToken%>" />
+    <title><%=title%></title>
 
-  <!-- External stylesheets -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <!--  paths for local stylesheets and scripts -->
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
 
-  <!-- protect from xss attack -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.4/purify.min.js"></script>
+    <!-- External stylesheets -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+      integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+      crossorigin="anonymous"
+    />
 
-</head>
-<body>
-  <%- include("header.ejs") %>
-  
-  <div class="container">
-    <div class="row g-5">
-      <div class="col-md-8">
-        <article id="blog-post" class="blog-post bg-light m-5 p-4">
-          <%= courseDetails.description %>
-        </article>
-      </div>
-      
-      <div class="col-md-4">
-        <div class="position-sticky pt-4 mb-3 bg-light rounded" style="top: 2rem;">
-          <div class="pt-2 mb-3 bg-light rounded">
-            <div class="d-flex flex-column">
-              <p class="text-3xl font-bold mx-auto mb-4"><%= courseDetails.coursename %></p>
+    <!-- protect from xss attack -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.4/purify.min.js"></script>
+  </head>
+  <body>
+    <%- include("header.ejs") %>
 
-              <!-- Chapters and pages  -->
-               <% for( let i = 0; i < getChaptersByCourse.length; i++ ) { %>
-                          <!-- for chapters -->
-                <div class="chapter-name chapter flex p-1 w-full items-center border justify-between rounded">
-                  <label class="text-2xl text-gray-600 font-bold pt-0.5 ml-2 cursor-pointer" 
-                    data-content='<%= getChaptersByCourse[i].chapterdescription %>'
-                    onclick="displayPageContent(this.dataset.content)">
+    <div class="container">
+      <div class="row g-5">
+        <div class="col-md-8">
+          <article id="blog-post" class="blog-post bg-light m-5 p-4">
+            <%= courseDetails.description %>
+          </article>
+        </div>
+
+        <div class="col-md-4">
+          <div
+            class="position-sticky pt-4 mb-3 bg-light rounded"
+            style="top: 2rem"
+          >
+            <div class="pt-2 mb-3 bg-light rounded">
+              <div class="d-flex flex-column">
+                <p class="text-3xl font-bold mx-auto mb-4">
+                  <%= courseDetails.coursename %>
+                </p>
+
+                <!-- Chapters and pages  -->
+                <% for( let i = 0; i < getChaptersByCourse.length; i++ ) { %>
+                <!-- for chapters -->
+                <div
+                  class="chapter-name chapter flex p-1 w-full items-center border justify-between rounded"
+                >
+                  <label
+                    class="text-2xl text-gray-600 font-bold pt-0.5 ml-2 cursor-pointer"
+                    data-content="<%= getChaptersByCourse[i].chapterdescription %>"
+                    onclick="displayPageContent(this.dataset.content)"
+                  >
                     <%= getChaptersByCourse[i].chaptername %>
                   </label>
-
                 </div>
                 <% for( let j = 0; j < allPagesOfCourse.length; j++ ) { %>
-                            <!-- for pages -->
-                  <% if (getChaptersByCourse[i].id===allPagesOfCourse[j].chapterid) { %>
-  
-                    <div class="chapter-name-page flex p-1 pl-2 w-full items-center border">
-                      <input type="checkbox" 
-                      <% if (allPagesOfCourse[j].Progresses && allPagesOfCourse[j].Progresses.length > 0 && allPagesOfCourse[j].Progresses[0].iscompleted) { %> 
-                        checked 
-                      <% } %> 
-                      class="w-4 h-4 mr-2 align-middle" 
-                      id="page-checkbox-<%= allPagesOfCourse[j].id %>" 
-                      onclick="updatePageStatus('<%= allPagesOfCourse[j].id %>')"
-                    >
-                    
-                    <label class="text-xl text-gray-600 font-bold pt-0.5 cursor-pointer" data-content='<%= allPagesOfCourse[j].content %>'  onclick="displayPageContent(this.dataset.content)">
-                      <%= allPagesOfCourse[j].pagename %>
-                    </label>
-                      </div>
+                <!-- for pages -->
+                <% if (getChaptersByCourse[i].id===allPagesOfCourse[j].chapterid) { %>
+
+                <div
+                  class="chapter-name-page flex p-1 pl-2 w-full items-center border"
+                >
+                  <input
+                    type="checkbox"
+                    <%
+                    if
+                    (allPagesOfCourse[j].Progresses
+                    &&
+                    allPagesOfCourse[j].Progresses.length
+                  />
+                  0 && allPagesOfCourse[j].Progresses[0].iscompleted) { %>
+                  checked
                   <% } %>
+                  class="w-4 h-4 mr-2 align-middle" id="page-checkbox-<%= allPagesOfCourse[j].id %>"
+                  onclick="updatePageStatus('<%= allPagesOfCourse[j].id %>')" >
+
+                  <label
+                    class="text-xl text-gray-600 font-bold pt-0.5 cursor-pointer"
+                    data-content="<%= allPagesOfCourse[j].content %>"
+                    onclick="displayPageContent(this.dataset.content)"
+                  >
+                    <%= allPagesOfCourse[j].pagename %>
+                  </label>
+                </div>
                 <% } %>
-               <% } %>
-              
+                <% } %>
+                <% } %>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  
-  <!--local JavaScript files -->
-  <script src="/js/functionalities.js"></script>
-  <script src="/js/fetchFunctions.js"></script>
 
-  <script>
+    <!--local JavaScript files -->
+    <script src="/js/functionalities.js"></script>
+    <script src="/js/fetchFunctions.js"></script>
+
+    <script>
       // display content in article
-    function displayPageContent(content) {
-      console.log("Raw content:", content); // Log raw content
-      const cleanContent = DOMPurify.sanitize(content); // Sanitize the HTML content to prevent xss attack
-      console.log("Sanitized content:", cleanContent); // Log sanitized content
-      document.getElementById('blog-post').innerHTML = cleanContent; // Set the sanitized content
-    }
-    function displayChapterContent(content) {
-      console.log("Displaying chapter content:", content); // Check if the function is called
-  const cleanContent = DOMPurify.sanitize(content);
-  document.getElementById('blog-post').innerHTML = cleanContent;
-  
-    }
-  </script>
-</body>
+      function displayPageContent(content) {
+        console.log("Raw content:", content); // Log raw content
+        const cleanContent = DOMPurify.sanitize(content); // Sanitize the HTML content to prevent xss attack
+        console.log("Sanitized content:", cleanContent); // Log sanitized content
+        document.getElementById("blog-post").innerHTML = cleanContent; // Set the sanitized content
+      }
+      function displayChapterContent(content) {
+        console.log("Displaying chapter content:", content); // Check if the function is called
+        const cleanContent = DOMPurify.sanitize(content);
+        document.getElementById("blog-post").innerHTML = cleanContent;
+      }
+    </script>
+  </body>
 </html>

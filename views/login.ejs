@@ -1,55 +1,75 @@
-<html></html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="csrf-token" content="<%=csrfToken%>">
-        <title><%= title %></title>
-        <link rel="stylesheet" href="./css/styles.css">
-        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
-        <script src="https://cdn.tailwindcss.com"></script>
-    </head>
-    <body>
-            <!-- header without search and profile -->
-        <header class="header bg-primary d-flex flex-row justify-content-center align-items-center gap-3">
-            <h1 class="text-3xl font-semibold text-white">Learning Management System</h1>
-        </header>
-        <div class="grid grid-cols-6">
-            <div class="col-start-3 col-span-2">
-                <h1 class="text-2xl font-bold mt-3">Login to your account</h1>
-                <% if(messages && messages.error && messages.error.length > 0)  { %>
-                    <ul class="mt-2 mb-0">
-                        <% for(var i=0; i<messages.error.length; i++) { %>
-                                <div class="text-red-600">
-                                    <li> <%= messages.error[i] %></li>
-                                    <% break %>
-                                </div>
-                        <% } %>
-                    </ul>
-                  <% } %>
-                <form action="/session" method="post">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="<%= csrfToken %>" />
+    <title><%=title%></title>
+    <link rel="stylesheet" href="./css/styles.css" />
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <!-- Header without search and profile -->
+    <header
+      class="header bg-primary d-flex flex-row justify-content-center align-items-center gap-3"
+    >
+      <h1 class="text-3xl font-semibold text-white">
+        Learning Management System
+      </h1>
+    </header>
 
-                    <input type="hidden" name="_csrf" value="<%=csrfToken %>">
-                    <div class="py-3">
-                        <label for="email">Email:</label>
-                        <input type="email" name="email"  class="border-2 border-slate-400 text-grey-900 rounded p-2 w-full">
-                    </div>
-                    
+    <div class="grid grid-cols-6 mt-5">
+      <div class="col-start-3 col-span-2">
+        <h1 class="text-2xl font-bold mt-3">Login to your account</h1>
 
-                    <div class="py-3">
-                        <label for="password">Password:</label>
-                        <input type="password" name="password"  class="border-2 border-slate-400 text-grey-900 rounded p-2 w-full">
-                    </div>
+        <% if (messages && messages.error && messages.error.length > 0) { %>
+        <ul class="mt-2 mb-0">
+          <% for (var i = 0; i < messages.error.length; i++) { %>
+          <li class="text-red-600"><%= messages.error[i] %></li>
+          <% } %>
+        </ul>
+        <% } %>
 
+        <form action="/session" method="post">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <div class="py-3">
+            <label for="email">Email:</label>
+            <input
+              type="email"
+              name="email"
+              class="border-2 border-slate-400 text-grey-900 rounded p-2 w-full"
+              required
+            />
+          </div>
 
-                    <div class="py-3">
-                        <button type="submit" class="text-white bg-primary hover:bg-green-800 font-medium rounded px-5 py-2">Sign in</button>
-                    </div>
-                </form>
-                <div class="bg-gray-100 fit-content mt-3 rounded">
-                    <p class="p-2">Create account <a href="/signup" class="text-green-600">Signup now</a></p>
-                </div>
-                
-            </div>
+          <div class="py-3">
+            <label for="password">Password:</label>
+            <input
+              type="password"
+              name="password"
+              class="border-2 border-slate-400 text-grey-900 rounded p-2 w-full"
+              required
+            />
+          </div>
+
+          <div class="py-3">
+            <button
+              type="submit"
+              class="text-white bg-primary hover:bg-green-800 font-medium rounded px-5 py-2"
+            >
+              Sign in
+            </button>
+          </div>
+        </form>
+
+        <div class="bg-gray-100 fit-content mt-3 rounded">
+          <p class="p-2">
+            Create account
+            <a href="/signup" class="text-green-600">Signup now</a>
+          </p>
         </div>
-    </body>
+      </div>
+    </div>
+  </body>
 </html>

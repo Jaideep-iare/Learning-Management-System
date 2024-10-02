@@ -1,52 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%=title%></title>
-    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/styles.css" />
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    
-    
-</head>
-<body>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
     <%- include("header.ejs") %>
 
     <div class="grid grid-cols-6">
-        <div class="col-start-3 col-span-2 pt-5">
-            <div class="d-flex flex-column gap-4 mt-5">
-                <table class="table table-success table-striped">
-                    <thead>
-                        <tr>
-                            <th>Course Name</th>
-                            <th>Total Enrollments</th>
-                            <th>Completed Students</th>
-                            <th>In Progress Students</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% courseReport.forEach(function(report) { %>
-                        <tr>
-                            <td><%= report.course %></td>
-                            <td><%= report.totalEnrollments %></td>
-                            <td><%= report.completedStudents %></td>
-                            <td><%= report.inProgressStudents %></td>
-                        </tr>
-                        <% }) %>
-                    </tbody>
-                </table>
-            </div>
+      <div class="col-start-3 col-span-2 pt-5">
+        <div class="d-flex flex-column gap-4 mt-5">
+          <table class="table table-success table-striped">
+            <thead>
+              <tr>
+                <th>Course Name</th>
+                <th>Total Enrollments</th>
+                <th>Completed Students</th>
+                <th>In Progress Students</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% courseReport.forEach(function(report) { %>
+              <tr>
+                <td><%= report.course %></td>
+                <td><%= report.totalEnrollments %></td>
+                <td><%= report.completedStudents %></td>
+                <td><%= report.inProgressStudents %></td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
         </div>
+      </div>
     </div>
     <!-- Bootstrap Bundle with Popper -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-        <!-- functionalities -->
-<script src="js/functionalities.js"></script>
-<script src="js/fetchFunctions.js"></script>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- functionalities -->
+    <script src="js/functionalities.js"></script>
+    <script src="js/fetchFunctions.js"></script>
+  </body>
 </html>

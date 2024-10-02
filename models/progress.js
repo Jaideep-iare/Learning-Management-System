@@ -16,37 +16,40 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "pageid",
       });
     }
-    static getCompletedPagesCount(allPagesIdsForCourse, studentid, iscompleted){
+    static getCompletedPagesCount(
+      allPagesIdsForCourse,
+      studentid,
+      iscompleted
+    ) {
       return this.count({
-          where:{ 
-            pageid: allPagesIdsForCourse,
-            studentid,
-            iscompleted
-          }
-    })
+        where: {
+          pageid: allPagesIdsForCourse,
+          studentid,
+          iscompleted,
+        },
+      });
     }
-    
   }
   Progress.init(
     {
       iscompleted: {
         type: DataTypes.BOOLEAN,
-        defaultValue: false  
+        defaultValue: false,
       },
-      studentid:{
+      studentid: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: 'Users', // Assumes that the User model is stored in the 'Users' table
-          key: 'id',
+          model: "Users", // Assumes that the User model is stored in the 'Users' table
+          key: "id",
         },
       },
-      pageid:{
+      pageid: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: 'Pages', // Assumes that the Page model is stored in the 'Pages' table
-          key: 'id',
+          model: "Pages", // Assumes that the Page model is stored in the 'Pages' table
+          key: "id",
         },
       },
     },
@@ -56,7 +59,7 @@ module.exports = (sequelize, DataTypes) => {
       indexes: [
         {
           unique: true,
-          fields: ['studentid', 'pageid'], // Composite unique => both studentid and pageid as a pair should be unique for upsert
+          fields: ["studentid", "pageid"], // Composite unique => both studentid and pageid as a pair should be unique for upsert
         },
       ],
     }

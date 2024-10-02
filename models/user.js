@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       User.hasMany(models.Course, {
-        as: 'courses',  //alias 
+        as: "courses", //alias
         foreignKey: "facultyid",
       });
       User.hasMany(models.Enrollment, {
@@ -20,21 +20,20 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.Progress, {
         foreignKey: "studentid",
       });
-
     }
-    static findFacultyNameById(availableCourses){
+    static findFacultyNameById(availableCourses) {
       return this.findAll({
-      where:{
-        id: availableCourses.facultyid
-      }
-    })
-  }
-  static updatePassword(userid,password){
-    return this.update(
-      { password: password },   // Update the password field
-      { where: { id: userid } }       // Specify the condition (where clause)
-    );
-  }
+        where: {
+          id: availableCourses.facultyid,
+        },
+      });
+    }
+    static updatePassword(userid, password) {
+      return this.update(
+        { password: password }, // Update the password field
+        { where: { id: userid } } // Specify the condition (where clause)
+      );
+    }
   }
   User.init(
     {
@@ -71,9 +70,9 @@ module.exports = (sequelize, DataTypes) => {
           notNull: { msg: "Role is required" },
           notEmpty: { msg: "Role cannot be empty" },
           isIn: {
-            args: [['student', 'faculty']],
-            msg: "Role must be either 'student' or 'faculty'"
-          }
+            args: [["student", "faculty"]],
+            msg: "Role must be either 'student' or 'faculty'",
+          },
         },
       },
     },

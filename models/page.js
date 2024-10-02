@@ -15,59 +15,64 @@ module.exports = (sequelize, DataTypes) => {
       Page.hasMany(models.Progress, {
         foreignKey: "pageid",
       });
-      Page.hasMany(models.Progress, 
-        { foreignKey: 'pageid' 
-
-        });
+      Page.hasMany(models.Progress, { foreignKey: "pageid" });
     }
 
-    static getProgressPagesByUserId(allChaptersIdsForCourse,userId) {
+    static getProgressPagesByUserId(allChaptersIdsForCourse, userId) {
       return this.findAll({
         where: {
           chapterid: allChaptersIdsForCourse,
         },
-        include: [{
-          model: sequelize.models.Progress,
-          required: false, // Left join (show pages even if no progress)
-          where: { studentid: userId }, // Get progress for the logged-in student
-          attributes: ['iscompleted'] // Only fetch the iscompleted field
-          
-        }]
+        include: [
+          {
+            model: sequelize.models.Progress,
+            required: false, // Left join (show pages even if no progress)
+            where: { studentid: userId }, // Get progress for the logged-in student
+            attributes: ["iscompleted"], // Only fetch the iscompleted field
+          },
+        ],
       });
     }
     static getPagesByChapterIds(chapterids) {
       return this.findAll({
         where: { chapterid: chapterids },
-        attributes: ['id', 'chapterid'], // Select page 'id' and associated 'chapterid'
+        attributes: ["id", "chapterid"], // Select page 'id' and associated 'chapterid'
+      });
+    }
+    static getPages(getChaptersByCourse) {
+      return this.findAll({
+        where: {
+          chapterid: getChaptersByCourse.map((chapter) => chapter.id),
+        },
       });
     }
 
-    static getPagesCountByChapterIds(allChaptersIdsForCourse){
+    static getPagesCountByChapterIds(allChaptersIdsForCourse) {
       return Page.count({
-        where:{
-          chapterid: allChaptersIdsForCourse
-        }
-      })
+        where: {
+          chapterid: allChaptersIdsForCourse,
+        },
+      });
     }
   }
   Page.init(
     {
       pagename: {
-        type : DataTypes.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
       },
       content: {
         type: DataTypes.TEXT,
-        allowNull: false, 
+        allowNull: false,
       },
-      chapterid:{
+      chapterid: {
         type: DataTypes.INTEGER,
-         allowNull: false, // Make sure that each course is assigned to a faculty
+        allowNull: false, // Make sure that each course is assigned to a faculty
         references: {
-        model: 'Chapters', // Assumes that the user model is stored in the 'Users' table
-        key: 'id',
+          model: "Chapters", // Assumes that the user model is stored in the 'Users' table
+          key: "id",
+        },
       },
-      }
     },
     {
       sequelize,

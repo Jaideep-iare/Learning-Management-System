@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%=title%></title>
+    <link rel="stylesheet" href="./css/styles.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <%- include("header.ejs", { allCoursesOfSite: allCoursesOfSite }) %>
+
+    <main class="grid grid-cols-6">
+      <div
+        class="col-start-3 col-span-2 p-6 bg-white rounded-lg shadow-lg mt-10"
+      >
+        <!-- Profile Info -->
+        <h1 class="text-2xl font-bold text-center mb-6">Profile</h1>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="name"
+            >Name:</label
+          >
+          <p class="text-gray-900"><%= user.name %></p>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="email"
+            >Email:</label
+          >
+          <p class="text-gray-900"><%= user.email %></p>
+        </div>
+
+        <div class="mb-4">
+          <label
+            class="block text-gray-700 text-sm font-bold mb-2"
+            for="accountType"
+            >Account Type:</label
+          >
+          <p class="text-gray-900"><%= user.role %></p>
+        </div>
+
+        <div class="flex items-center justify-center">
+          <button
+            onclick="window.location.href='/changepassword'"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Update Password
+          </button>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

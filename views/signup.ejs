@@ -1,45 +1,61 @@
-<% if(messages && messages.error && messages.error.length > 0)  { %>
-    <ul class="mt-2 mb-0">
-        <% for(var i=0; i<messages.error.length; i++) { %>
-                <div class="text-red-600">
-                    <li> <%= messages.error[i] %></li>
-                    <% break %>
-                </div>
-        <% } %>
-    </ul>
+<% if (messages && messages.error && messages.error.length > 0) { %>
+<ul class="mt-2 mb-0">
+  <% for (var i = 0; i < messages.error.length; i++) { %>
+  <li class="text-red-600"><%= messages.error[i] %></li>
   <% } %>
-                <form action="/users" method="post">
+</ul>
+<% } %>
+<form action="/users" method="post">
+  <input type="hidden" name="_csrf" value="<%=csrfToken %>" />
+  <div class="pt-2 pb-1">
+    <label for="name">Full Name:</label>
+    <input
+      type="text"
+      name="name"
+      id=""
+      class="border-2 border-slate-400 text-grey-900 rounded p-2 w-full"
+    />
+  </div>
 
-                    <input type="hidden" name="_csrf" value="<%=csrfToken %>">
-                    <div class="pt-2 pb-1">
-                        <label for="name">Full Name:</label>
-                        <input type="text" name="name" id="" class="border-2 border-slate-400 text-grey-900 rounded p-2 w-full">
-                    </div>    
+  <div class="py-1">
+    <label for="role">Account Type:</label>
+    <select
+      name="role"
+      id=""
+      class="select-custom border-2 border-slate-400 text-grey-900 rounded p-2 bg-white w-full"
+    >
+      <option value="" selected disabled>Select Account Type</option>
+      <option value="student">Student</option>
+      <option value="faculty">Faculty</option>
+    </select>
+  </div>
 
-                    <div class="py-1">
-                        <label for="role">Account Type:</label>
-                        <select name="role" id="" class="select-custom border-2 border-slate-400 text-grey-900 rounded p-2 bg-white w-full">
-                            <option value=""  selected disabled>Select Account Type</option>
-                            <option value="student">Student</option>
-                            <option value="faculty">Faculty</option>
-                        </select>
-                    </div>
-                    
+  <div class="py-1">
+    <label for="email">Email:</label>
+    <input
+      type="email"
+      name="email"
+      id=""
+      class="border-2 border-slate-400 text-grey-900 rounded p-2 w-full"
+    />
+  </div>
 
-                    <div class="py-1">
-                        <label for="email">Email:</label>
-                        <input type="email" name="email" id="" class="border-2 border-slate-400 text-grey-900 rounded p-2 w-full">
-                    </div>
-                    
+  <div class="py-1">
+    <label for="password">Password:</label>
+    <input
+      type="password"
+      name="password"
+      id=""
+      class="border-2 border-slate-400 text-grey-900 rounded p-2 w-full"
+    />
+  </div>
 
-                    <div class="py-1">
-                        <label for="password">Password:</label>
-                        <input type="password" name="password" id="" class="border-2 border-slate-400 text-grey-900 rounded p-2 w-full">
-                    </div>
-
-                    <div class="py-1">
-                        <button type="submit" class="text-white bg-primary hover:bg-green-800 font-medium rounded px-5 py-2">Sign up</button>
-                    </div>
-                </form>
-        
-    
+  <div class="py-1">
+    <button
+      type="submit"
+      class="text-white bg-primary hover:bg-green-800 font-medium rounded px-5 py-2"
+    >
+      Sign up
+    </button>
+  </div>
+</form>

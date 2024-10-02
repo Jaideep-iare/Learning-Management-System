@@ -16,10 +16,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "courseid",
       });
     }
-    static findEnrolledCourses(loggedInUser){
+    static findEnrolledCourses(loggedInUser) {
       return Enrollment.findAll({
-        where:{
-          studentid: loggedInUser.id
+        where: {
+          studentid: loggedInUser.id,
         },
         include: [
           {
@@ -27,13 +27,13 @@ module.exports = (sequelize, DataTypes) => {
             include: [
               {
                 model: sequelize.models.User, // Include author details
-                as: 'faculty', //  alias association
-                attributes: ['name'], // Fetch only the author's name
-              }
+                as: "faculty", //  alias association
+                attributes: ["name"], // Fetch only the author's name
+              },
             ],
-          }
+          },
         ],
-      })
+      });
     }
   }
   Enrollment.init(
@@ -53,7 +53,7 @@ module.exports = (sequelize, DataTypes) => {
       studentid: {
         type: DataTypes.INTEGER,
         allowNull: false,
-      }
+      },
     },
     {
       sequelize,

@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       });
       Course.belongsTo(models.User, {
         foreignKey: "facultyid",
-        as: 'faculty', // Alias for User model
+        as: "faculty", // Alias for User model
       });
       Course.hasMany(models.Enrollment, {
         foreignKey: "courseid",
@@ -27,63 +27,62 @@ module.exports = (sequelize, DataTypes) => {
 
     static findAvailableCourse() {
       return this.findAll({
-         include: {
-            model: sequelize.models.User, // Include User (faculty) model
-            as: 'faculty', // The alias we defined earlier
-            attributes: ['name'] // Only include faculty's name
-         }
-      });
-   }
-
-   static getNotEnrolledCourses(enrolledcourseIds){
-    return this.findAll({
-      where:{
-        id:{
-          [Op.notIn]:enrolledcourseIds
+        include: {
+          model: sequelize.models.User, // Include User (faculty) model
+          as: "faculty", // The alias we defined earlier
+          attributes: ["name"], // Only include faculty's name
         },
-      },
+      });
+    }
+
+    static getNotEnrolledCourses(enrolledcourseIds) {
+      return this.findAll({
+        where: {
+          id: {
+            [Op.notIn]: enrolledcourseIds,
+          },
+        },
         include: {
           model: sequelize.models.User, // Include faculty details
-          as: 'faculty', // Assuming 'faculty' is the alias for the User model
-          attributes: ['name'] // Fetch faculty's name
-        }
-
-    });
-   }
-   
+          as: "faculty", // Assuming 'faculty' is the alias for the User model
+          attributes: ["name"], // Fetch faculty's name
+        },
+      });
+    }
 
     static async findFacultyCourse(loggedInUser) {
       try {
-          return await this.findAll({
-              where: {
-                  facultyid: loggedInUser.id
-              }
-          }) || []; // If no records, return an empty array
+        return (
+          (await this.findAll({
+            where: {
+              facultyid: loggedInUser.id,
+            },
+          })) || []
+        ); // If no records, return an empty array
       } catch (error) {
-          console.error("Error fetching faculty courses:", error);
-          return [];
+        console.error("Error fetching faculty courses:", error);
+        return [];
       }
-  }
-  
+    }
   }
   Course.init(
     {
       coursename: {
-        type : DataTypes.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
       },
       description: {
         type: DataTypes.TEXT,
-        allowNull: false, 
+        allowNull: false,
       },
-      facultyid:{
+      facultyid: {
         type: DataTypes.INTEGER,
-      allowNull: false, // Make sure that each course is assigned to a faculty
-      references: {
-        model: 'Users', // Assumes that the user model is stored in the 'Users' table
-        key: 'id',
+        allowNull: false, // Make sure that each course is assigned to a faculty
+        references: {
+          model: "Users", // Assumes that the user model is stored in the 'Users' table
+          key: "id",
+        },
       },
-      }
     },
     {
       sequelize,
