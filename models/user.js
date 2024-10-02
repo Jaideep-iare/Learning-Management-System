@@ -29,23 +29,53 @@ module.exports = (sequelize, DataTypes) => {
       }
     })
   }
+  static updatePassword(userid,password){
+    return this.update(
+      { password: password },   // Update the password field
+      { where: { id: userid } }       // Specify the condition (where clause)
+    );
+  }
   }
   User.init(
     {
       name: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+          notNull: { msg: "Name is required" },
+          notEmpty: { msg: "Name cannot be empty" },
+        },
       },
       email: {
         type: DataTypes.STRING,
         unique: true,
         allowNull: false,
+        validate: {
+          notNull: { msg: "email is required" },
+          isEmail: { msg: "Must be a valid email" },
+          notEmpty: { msg: "Email cannot be empty" },
+        },
       },
       password: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+          notNull: { msg: "password is required" },
+          notEmpty: { msg: "password cannot be empty" },
+        },
       },
-      role: DataTypes.STRING,
+      role: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notNull: { msg: "Role is required" },
+          notEmpty: { msg: "Role cannot be empty" },
+          isIn: {
+            args: [['student', 'faculty']],
+            msg: "Role must be either 'student' or 'faculty'"
+          }
+        },
+      },
     },
     {
       sequelize,
