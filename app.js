@@ -11,6 +11,18 @@ const localStrategy = require("passport-local");
 const connectEnsureLogin = require("connect-ensure-login");
 const session = require("express-session");
 
+
+//bcrypt password hash
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
+
+
+//csrf protection
+var csrf = require("tiny-csrf");
+var cookieParser = require("cookie-parser");
+
+
+
 //set ejs as view engine
 app.set("view engine","ejs")
 
@@ -19,12 +31,15 @@ app.set("view engine","ejs")
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname,"public")));
 const {Course, Chapter, Enrollment, Progress, Page, Report, User, sequelize } = require("./models");
-const { Console } = require("console");
-const { where } = require("sequelize");
+
 
 // Parse URL-encoded bodies mostly rich content like in quill editor as key value pairs
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+//use csrf after express
+app.use(cookieParser("shh! some secret string"));
+app.use(csrf("this_should_be_32_character_long",["POST", "PUT", "DELETE"]))
 
 //define session duration:
 app.use(
@@ -40,14 +55,28 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+
+//flash
+const flash = require("connect-flash");
+app.use(flash());
+app.use(function (req, res, next) {
+  res.locals.messages = req.flash();
+  next();
+});
+
 //define authentication local strategy for passport:
 passport.use(new localStrategy({
     usernameField: 'email',
     passwordField: 'password',
-  }, (usernameField, passwordField, done)=>{
-    User.findOne({where: {email: usernameField, password: passwordField }})
-    .then((user)=>{
-      return done(null,user)//authentication successful
+  }, (username, password, done)=>{
+    User.findOne({where: {email: username}})
+    .then(async (user)=>{
+      const result = await bcrypt.compare(password, user.password)
+      if (result) {
+        return done(null, user); //authentication successful
+      } else {
+        return done(null, false, { message: "Invalid password" });
+      }
     }).catch((error)=>{
       return error;
     })
@@ -55,7 +84,7 @@ passport.use(new localStrategy({
 
   //After the user authenticated,store user in the session by serializing the user data:
 passport.serializeUser((user, done) => {
-    console.log("Serializing the user in the session", user.id);
+    // console.log("Serializing the user in the session", user.id);
     done(null, user.id);
   });
 //deserialize user
@@ -76,6 +105,7 @@ passport.deserializeUser((id, done) => {
       res.redirect("/home");
     } else {
       res.render("index", {
+        title:"Signup"
       });
     }
   });
@@ -148,7 +178,8 @@ app.get("/home",connectEnsureLogin.ensureLoggedIn(), async(req,res)=>{
               notEnrolledCourses,
               courseEnrollmentCounts,
               coursePageStatus,
-              allCoursesOfSite
+              allCoursesOfSite,
+              csrfToken: req.csrfToken()
   
           });
       }else{
@@ -182,12 +213,17 @@ app.get("/enrolled/:id",connectEnsureLogin.ensureLoggedIn(), async(req,res)=>{
             }
           }
   
+          // for search header
+          const allCoursesOfSite = await Course.findAll()
           res.render("enrolled",{
-            title: "Course Name",
+            title: courseDetails.coursename,
             getChaptersByCourse,
             allPagesOfCourse,
             courseDetails,
-            student: req.user.id
+            student: req.user.id,
+            allCoursesOfSite,
+            csrfToken: req.csrfToken(),
+            
         });
       
       }catch (error) {
@@ -239,7 +275,7 @@ app.post("/enroll/:courseId", connectEnsureLogin.ensureLoggedIn(), async (req, r
 //add chapter to database
 app.post("/addcourse/:id",connectEnsureLogin.ensureLoggedIn(), async(req,res)=>{
     try {
-        const newcourse = await Course.create({
+        await Course.create({
             coursename: req.body.coursename,
             description: req.body.description,
             facultyid: req.params.id
@@ -252,20 +288,44 @@ app.post("/addcourse/:id",connectEnsureLogin.ensureLoggedIn(), async(req,res)=>{
     }
 })
 
+//delete course
+app.delete("/deletecourse/:id", async (req, res) => {
+  const courseId = req.params.id;
+  try {
+    const course = await Course.findByPk(courseId);
+    if (!course) {
+      return res.status(404).send("Course not found.");
+    }
+    // delete course from courses table will also reflect on chapters,pages and progress table
+    await course.destroy();
+
+    res.status(200).send("Course deleted successfully.");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error deleting Course.");
+  }
+});
+
+
 //addchapter display to the course page
 app.get("/addchapter/:id",connectEnsureLogin.ensureLoggedIn(),  async (req, res) => {
     const courseId = req.params.id;
     try {
+        const courseDetails = await Course.findByPk(courseId);
         const getChaptersByCourse = await Chapter.getChapters(courseId); // Fetch chapters for this course
         const allPagesOfCourse = await Page.getPages(getChaptersByCourse);
 
- // Fetch all pages
-        
+
+        // for search header
+        const allCoursesOfSite = await Course.findAll();
         res.render("addchapter", {
-            title: "Add Chapter",
+            title: courseDetails.coursename+"-Add Chapter",
             courseId,
             getChaptersByCourse,
-            allPagesOfCourse // Pass allpages to the template
+            allPagesOfCourse, // Pass allpages to the template,
+            allCoursesOfSite,
+            csrfToken: req.csrfToken(),
+            
         });
     } catch (error) {
         console.error(error);
@@ -275,84 +335,72 @@ app.get("/addchapter/:id",connectEnsureLogin.ensureLoggedIn(),  async (req, res)
 
 
 //addchapter send chapter to the course
-app.post("/addchapter/:id",connectEnsureLogin.ensureLoggedIn(),  async (req, res) => {
-    try {
-        const courseId = req.params.id
-        const newchapter = await Chapter.create({
-            chaptername: req.body.chaptername,
-            chapterdescription: req.body.chapterdescription,
-            courseid: courseId,
-        });
-        // console.log("New chapter added", newchapter);
-
-        const getChaptersByCourse = await Chapter.getChapters(courseId);
-        const allPagesOfCourse = await Page.getPages(getChaptersByCourse);
-
-        if (req.accepts("html")) {
-            res.render("addchapter", {
-                title: "Add Chapter",
-                getChaptersByCourse,
-                allPagesOfCourse,
-                courseId
-            });
-        } else {
-            res.status(200).json(newchapter); // Respond with JSON if not HTML
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error creating chapter');
+app.post("/addchapter/:id", connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
+  try {
+    const courseId = req.params.id;
+    
+    if (!req.body.chaptername || req.body.chaptername.trim() === "") {
+      req.flash("error", "Chaptername cannot be empty");
+      return res.redirect(`/addchapter/${courseId}`);
     }
+    if (!req.body.chapterdescription || req.body.chapterdescription.trim() === "") {
+      req.flash("error", "Description cannot be empty");
+      return res.redirect(`/addchapter/${courseId}`);
+    }
+      const newChapter = await Chapter.create({
+          chaptername: req.body.chaptername,
+          chapterdescription: req.body.chapterdescription,
+          courseid: courseId,
+      });
+      // console.log(newChapter)
+
+      // After successfully adding the chapter, redirect to the same page (or another page)
+      res.redirect(`/addchapter/${courseId}`);
+  } catch (error) {
+      console.error(error);
+      res.status(500).send('Error creating chapter');
+  }
+});
+
+
+//delete chapter 
+app.delete("/deletechapter/:id", async (req, res) => {
+  const chapterId = req.params.id;
+  try {
+    const chapter = await Chapter.findByPk(chapterId);
+    if (!chapter) {
+      return res.status(404).send("Chapter not found.");
+    }
+    // delete chapter from chapters table will also reflect on pages and progress table
+    await chapter.destroy();
+
+    res.status(200).send("Chapter deleted successfully.");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error deleting Chapter.");
+  }
 });
 
 
 
 //addpage to the chapter of course
 app.get("/addpage/:id",connectEnsureLogin.ensureLoggedIn(),  async(req,res)=>{
+  // for search header
+    const allCoursesOfSite = await Course.findAll()
     const chapterId = req.params.id;
+    const chapterDetails = await Chapter.findByPk(chapterId);
     res.render("addpage",{
-        title: "Module Name",
-        chapterId
+        title: chapterDetails.chaptername+"-Add Page",
+        chapterId,
+        allCoursesOfSite,
+        csrfToken: req.csrfToken(),
     });
 })
 
-app.post("/setPageStatus/:id", async (req, res) => {
-  const studentid = req.user.id;
-  const pageid = req.params.id;
-  const iscompleted = req.body.completed ? true : false;
-
-  try {
-    await Progress.upsert({
-      studentid,
-      pageid,
-      iscompleted,
-    });
-    res.status(200).send("Progress updated successfully.");
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error updating progress.");
-  }
-});
-
-
-
-//viewreport
-app.get("/viewreport",connectEnsureLogin.ensureLoggedIn(), (req,res)=>{
-    res.render("viewreport",{
-        title: "Report"
-    });
-})
-
-//change password
-app.get("/changepassword",connectEnsureLogin.ensureLoggedIn(), async(req,res)=>{
-  const allCoursesOfSite = await Course.findAll()
-    res.render("changepassword",{
-        title: "Change password",
-        allCoursesOfSite
-    });
-})
 
 app.post("/addpage/:id", connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
   try {
+    
     const pageName = req.body.pagename;
     const formattedText = req.body.content; // Rich Text content from the add page
     const chapterId = req.params.id;
@@ -378,6 +426,156 @@ app.post("/addpage/:id", connectEnsureLogin.ensureLoggedIn(), async (req, res) =
 
 
 
+//delete page from chapter
+app.delete("/deletepage/:id", async (req, res) => {
+  const pageId = req.params.id;
+  try {
+    const page = await Page.findByPk(pageId);
+    if (!page) {
+      return res.status(404).send("Page not found.");
+    }
+    // delete page from pages table will also reflect on progress table
+    await page.destroy();
+
+    res.status(200).send("Page deleted successfully.");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error deleting page.");
+  }
+});
+
+app.post("/setPageStatus/:id", async (req, res) => {
+  const studentid = req.user.id;
+  const pageid = req.params.id;
+  const iscompleted = req.body.completed ? true : false;
+
+  try {
+    await Progress.upsert({
+      studentid,
+      pageid,
+      iscompleted,
+    });
+    res.status(200).send("Progress updated successfully.");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error updating progress.");
+  }
+});
+
+
+
+//viewreport
+// Get report for faculty's courses
+app.get("/viewreport", connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
+  try {
+      // Get the logged-in faculty user
+      const facultyId = req.user.id;
+
+      // Fetch all courses created by this faculty
+      const facultyCourses = await Course.findAll({
+          where: {
+              facultyid: facultyId
+          }
+      });
+
+      // Initialize an array to hold report data for each course
+      const courseReport = [];
+
+      // Loop through each course and gather report data
+      for (const course of facultyCourses) {
+          // Get the number of students enrolled in the course
+          const totalEnrollments = await Enrollment.count({
+              where: {
+                  courseid: course.id,
+              },
+          });
+
+          // Get all chapters for this course
+          const courseChapters = await Chapter.getChapters(course.id);
+          const chapterIds = courseChapters.map(chapter => chapter.id);
+
+          // Get the total number of pages in all chapters for this course
+          const totalPages = await Page.getPagesCountByChapterIds(chapterIds);
+
+          // Get the number of students who have completed the course (i.e., completed all pages)
+          const completedStudents = await sequelize.query(`
+            SELECT e.studentid
+            FROM public."Enrollments" e
+            JOIN public."Progresses" p ON p.studentid = e.studentid
+            WHERE e.courseid = :courseId
+            AND p.iscompleted = true
+            GROUP BY e.studentid
+            HAVING COUNT(p.pageid) = :totalPages
+        `, {
+            replacements: { courseId: course.id, totalPages: totalPages },
+            type: sequelize.QueryTypes.SELECT
+        });
+
+          // Get the number of students who are currently progressing (not completed)
+          const inProgressStudents = totalEnrollments - completedStudents.length;
+
+          // Add report data for this course to the array
+          courseReport.push({
+              course: course.coursename,
+              totalEnrollments,
+              completedStudents: completedStudents.length,
+              inProgressStudents
+          });
+      }
+
+      // For search header (optional)
+      const allCoursesOfSite = await Course.findAll();
+
+      // Render the viewreport page with the report data
+      res.render("viewreport", {
+          title: "Faculty Report",
+          courseReport,
+          allCoursesOfSite
+      });
+  } catch (error) {
+      console.error("Error generating faculty report:", error);
+      res.status(500).send("An error occurred while generating the report.");
+  }
+});
+
+
+//change password display
+app.get("/changepassword",connectEnsureLogin.ensureLoggedIn(), async(req,res)=>{
+  const allCoursesOfSite = await Course.findAll()
+    res.render("changepassword",{
+        title: "Change password",
+        allCoursesOfSite,
+        csrfToken: req.csrfToken(),
+    });
+})
+
+app.post("/changepassword", connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
+  const user = req.user;
+  const submittedData = req.body;
+
+  try {
+    const currentUser = await User.findByPk(user.id); 
+    const isMatch = await bcrypt.compare(submittedData.password, currentUser.password);
+
+    if (isMatch) {
+      return res.status(400).send("New password cannot be the same as the old password.");
+    }
+
+    if (submittedData.password === submittedData.confirmpassword) {
+      const hashedPwd = await bcrypt.hash(submittedData.password, saltRounds);
+      await User.updatePassword(user.id, hashedPwd);
+      console.log("Password updated successfully");
+      return res.redirect("/home");
+
+    } else {
+      return res.status(400).send("Passwords do not match.");
+    }
+  } catch (error) {
+    console.error("Error updating password:", error);
+    return res.status(500).send("An error occurred while updating the password.");
+  }
+});
+
 
 
 //available course details page
@@ -391,60 +589,114 @@ app.get("/available/:id",connectEnsureLogin.ensureLoggedIn(),  async(req,res)=>{
         attrtbutes:['name'],// Only include the faculty's name
       }
     });
+    // for search header
+    const allCoursesOfSite = await Course.findAll()
+
     res.render("available",{
-        title: "Course Name",
+        title: course.coursename,
         getChaptersByCourse,
-        course
+        course,
+        allCoursesOfSite,
+        csrfToken: req.csrfToken(),
+
     });
 })
 
 
 //user signup post request
-app.post("/users",async(req,res)=>{
-    try {
-        const user = await User.create({
-            name: req.body.name,
-            role: req.body.role,
-            email: req.body.email,
-            password: req.body.password,
-          });
-          req.login(user, (err)=>{    //these lines are added to initialize session
-            if(err){
-              console.log(err);
-            }
-            res.redirect("/home")
-          })
-          console.log(user)
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error creating user');
+app.post("/users", async (req, res) => {
+  try {
+    // Validate input fields
+    if (!req.body.name || req.body.name.trim() === "") {
+      req.flash("error", "Name cannot be empty");
+      return res.redirect("/signup");
     }
-}) 
+    if (!req.body.role || req.body.role.trim() === "") {
+      req.flash("error", "Role cannot be empty");
+      return res.redirect("/signup");
+    }
+    if (!req.body.email || req.body.email.trim() === "") {
+      req.flash("error", "Email cannot be empty");
+      return res.redirect("/signup");
+    }
+    if (!req.body.password || req.body.password.trim() === "") {
+      req.flash("error", "Password cannot be empty");
+      return res.redirect("/signup");
+    }
+
+    // Hash the user password
+    const hashedPwd = await bcrypt.hash(req.body.password, saltRounds);
+
+    // Create a new user
+    const user = await User.create({
+      name: req.body.name,
+      role: req.body.role,
+      email: req.body.email,
+      password: hashedPwd,
+    });
+
+    // Log in the user and initialize session
+    req.login(user, (err) => {
+      if (err) {
+        console.error("Login error:", err);
+        req.flash("error", "An error occurred during login.");
+        return res.redirect("/signup");
+      }
+      res.redirect("/home");
+    });
+
+  } catch (error) {
+    console.error("Error during user signup:", error);
+    req.flash("error", "An error occurred while signing up. Please try again.");
+    return res.redirect("/signup");
+  }
+});
+
+
 //signup route  
 app.get("/signup",(req,res)=>{
     res.render("index",{
-        title:"signup"
+        title:"Signup",
+        csrfToken: req.csrfToken(),
     })
 })
 //login route
 app.get("/login",(req,res)=>{
     res.render("login",{
-        title:"login"
+        title:"Login",
+        csrfToken: req.csrfToken(),
     })
 });
 
+
 //define session for login using passport.authenticate
-app.post(
-    "/session",
+app.post("/session", async (req, res, next) => {
+  try {
+    // Validate input fields
+    if (!req.body.email || req.body.email.trim() === "") {
+      req.flash("error", "Email cannot be empty");
+      return res.redirect("/login");
+    }
+    if (!req.body.password || req.body.password.trim() === "") {
+      req.flash("error", "Password cannot be empty");
+      return res.redirect("/login");
+    }
+
+    // If validation passes, authenticate the user
     passport.authenticate("local", {
       failureRedirect: "/login",
       failureFlash: true,
-    }),
-    (req, res) => {
-    //   console.log(req.user);
-      res.redirect("/home"); //on successful login
-    }
-  );
+    })(req, res, () => {
+      // On successful login
+      res.redirect("/home");
+    });
+  } catch (error) {
+    console.error("Error during user Login:", error);
+    req.flash("error", "An error occurred while logging in. Please try again.");
+    return res.redirect("/login");
+  }
+});
+
 
   //signout
 app.get("/signout", (req, res, next) => {
@@ -454,6 +706,19 @@ app.get("/signout", (req, res, next) => {
       }
       res.redirect("/login");
     });
+  });
+
+  //profile
+  app.get("/profile",connectEnsureLogin.ensureLoggedIn(), async(req, res) => {
+    const allCoursesOfSite = await Course.findAll()
+    res.render("profile",{
+      title:"Profile",
+      allCoursesOfSite,
+      user:req.user,
+      csrfToken: req.csrfToken(),
+
+      
+  })
   });
 
 
