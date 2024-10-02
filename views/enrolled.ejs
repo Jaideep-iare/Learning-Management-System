@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<%=csrfToken%>">
   <title><%=title%></title>
   
-  <!-- Corrected paths for local stylesheets and scripts -->
+  <!--  paths for local stylesheets and scripts -->
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
 
@@ -39,12 +40,11 @@
                           <!-- for chapters -->
                 <div class="chapter-name chapter flex p-1 w-full items-center border justify-between rounded">
                   <label class="text-2xl text-gray-600 font-bold pt-0.5 ml-2 cursor-pointer" 
-                  data-content='<%= JSON.stringify(getChaptersByCourse[i].chapterdescription) %>'
-              
-                  onclick="displayPageContent(this.dataset.content)">
-                  
-                  <%= getChaptersByCourse[i].chaptername %>
+                    data-content='<%= getChaptersByCourse[i].chapterdescription %>'
+                    onclick="displayPageContent(this.dataset.content)">
+                    <%= getChaptersByCourse[i].chaptername %>
                   </label>
+
                 </div>
                 <% for( let j = 0; j < allPagesOfCourse.length; j++ ) { %>
                             <!-- for pages -->
@@ -60,8 +60,10 @@
                       onclick="updatePageStatus('<%= allPagesOfCourse[j].id %>')"
                     >
                     
-                        <label class="text-xl text-gray-600 font-bold pt-0.5 cursor-pointer" data-content='<%= JSON.stringify(allPagesOfCourse[j].content) %>' onclick="displayPageContent(this.dataset.content)"><%= allPagesOfCourse[j].pagename %></label>
-                    </div>
+                    <label class="text-xl text-gray-600 font-bold pt-0.5 cursor-pointer" data-content='<%= allPagesOfCourse[j].content %>'  onclick="displayPageContent(this.dataset.content)">
+                      <%= allPagesOfCourse[j].pagename %>
+                    </label>
+                      </div>
                   <% } %>
                 <% } %>
                <% } %>
