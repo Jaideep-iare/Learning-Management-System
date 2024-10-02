@@ -19,9 +19,26 @@
     <div class="grid grid-cols-6">
         <div class="col-start-3 col-span-2 pt-5">
             <div class="d-flex flex-column gap-4 mt-5">
-                <h3 class="text-2xl text-grey-900 font-bold">Total courses added : <span class="text-xl text-grey-500 font-medium">10</span></h3>
-                <h3 class="text-2xl text-grey-900 font-bold">Total Students enrolled : <span class="text-xl text-grey-500 font-medium">10</span></h3>
-                <h3 class="text-2xl text-grey-900 font-bold">Total studentes completed : <span class="text-xl text-grey-500 font-medium">10</span></h3>
+                <table class="table table-success table-striped">
+                    <thead>
+                        <tr>
+                            <th>Course Name</th>
+                            <th>Total Enrollments</th>
+                            <th>Completed Students</th>
+                            <th>In Progress Students</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% courseReport.forEach(function(report) { %>
+                        <tr>
+                            <td><%= report.course %></td>
+                            <td><%= report.totalEnrollments %></td>
+                            <td><%= report.completedStudents %></td>
+                            <td><%= report.inProgressStudents %></td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
