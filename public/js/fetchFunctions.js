@@ -10,7 +10,7 @@ function updatePageStatus(id) {
     method: "post",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      completed: isCompleted, // Sending the checkbox status
+      iscompleted: isCompleted, // Sending the checkbox status
       _csrf: token,
     }),
   })
