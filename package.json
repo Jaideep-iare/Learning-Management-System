@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon -e js,ejs",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "db:create:test": "NODE_ENV=test npx sequelize-cli db:create",
+    "pretest": "NODE_ENV=test npx sequelize-cli db:drop && NODE_ENV=test npx sequelize-cli db:create",
+    "test": "NODE_ENV=test jest --detectOpenHandles"
   },
   "lint-staged": {
     "*.js": [
@@ -20,14 +22,20 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.6",
     "ejs": "^3.1.10",
     "express": "^4.21.0",
+    "jest": "^29.7.0",
     "pg": "^8.13.0",
     "quill": "^2.0.2",
-    "sequelize": "^6.37.3"
+    "sequelize": "^6.37.3",
+    "supertest": "^7.0.0",
+    "tiny-csrf": "^1.1.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.1",
+    "cheerio": "^1.0.0",
     "connect-ensure-login": "^0.1.1",
     "eslint": "^9.11.1",
     "express-session": "^1.18.0",
