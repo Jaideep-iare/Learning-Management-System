@@ -114,7 +114,7 @@ app.get("/", async (req, res) => {
     res.redirect("/home");
   } else {
     res.render("index", {
-      title: "Signup",
+      title: "Signup-Learning Management System",
       csrfToken: req.csrfToken(),
     });
   }
@@ -207,7 +207,13 @@ app.get("/home", connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
         csrfToken: req.csrfToken(),
       });
     } else {
-      console.log("cannot accept the html");
+      res.json({
+        facultyCourses,
+        availableCourses,
+        enrolledcourses,
+        notEnrolledCourses,
+        loggedInUser
+      });
     }
   } catch (error) {
     console.error("Error:", error);
@@ -251,15 +257,30 @@ app.get(
 
       // for search header
       const allCoursesOfSite = await Course.findAll();
-      res.render("enrolled", {
-        title: courseDetails.coursename,
-        getChaptersByCourse,
-        allPagesOfCourse,
-        courseDetails,
-        student: req.user.id,
-        allCoursesOfSite,
-        csrfToken: req.csrfToken(),
-      });
+      if (req.accepts("html")) {
+        res.render("enrolled", {
+          title: courseDetails.coursename,
+          getChaptersByCourse,
+          allPagesOfCourse,
+          courseDetails,
+          student: req.user.id,
+          allCoursesOfSite,
+          csrfToken: req.csrfToken(),
+        });
+      }
+      else {
+        res.json({
+
+          allPagesOfCourse,
+          allChaptersIdsForCourse,
+          courseDetails,
+          allCoursesOfSite,
+          getChaptersByCourse,
+          student: req.user.id,
+          
+        });
+      }
+      
     } catch (error) {
       console.error(error);
       res.status(500).send("Error fetching chapters and pages");
@@ -308,14 +329,14 @@ app.post(
 
 //add chapter to database
 app.post(
-  "/addcourse/:id",
+  "/addcourse",
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
     try {
       await Course.create({
         coursename: req.body.coursename,
         description: req.body.description,
-        facultyid: req.params.id,
+        facultyid: req.user.id,
       });
       res.redirect("/home");
       // console.log("New course added is",newcourse);
@@ -357,14 +378,25 @@ app.get(
 
       // for search header
       const allCoursesOfSite = await Course.findAll();
-      res.render("addchapter", {
-        title: courseDetails.coursename + "-Add Chapter",
-        courseId,
-        getChaptersByCourse,
-        allPagesOfCourse, // Pass allpages to the template,
-        allCoursesOfSite,
-        csrfToken: req.csrfToken(),
-      });
+      if (req.accepts("html")) {
+        res.render("addchapter", {
+          title: courseDetails.coursename + "-Add Chapter",
+          courseId,
+          getChaptersByCourse,
+          allPagesOfCourse, // Pass allpages to the template,
+          allCoursesOfSite,
+          csrfToken: req.csrfToken(),
+        })
+      }
+      else {
+        res.json({
+
+          getChaptersByCourse,
+          allPagesOfCourse
+          
+        });
+      }
+      ;
     } catch (error) {
       console.error(error);
       res.status(500).send("Error fetching chapters and pages");
@@ -494,7 +526,7 @@ app.delete("/deletepage/:id", async (req, res) => {
 app.post("/setPageStatus/:id", async (req, res) => {
   const studentid = req.user.id;
   const pageid = req.params.id;
-  const iscompleted = req.body.completed ? true : false;
+  const iscompleted = req.body.iscompleted ? true : false;
 
   try {
     await Progress.upsert({
