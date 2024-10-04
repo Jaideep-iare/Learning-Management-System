@@ -65,15 +65,8 @@
                 <div
                   class="chapter-name-page flex p-1 pl-2 w-full items-center border"
                 >
-                  <input
-                    type="checkbox"
-                    <%
-                    if
-                    (allPagesOfCourse[j].Progresses
-                    &&
-                    allPagesOfCourse[j].Progresses.length
-                  />
-                  0 && allPagesOfCourse[j].Progresses[0].iscompleted) { %>
+                <input type="checkbox"
+                    <%if(allPagesOfCourse[j].Progresses && allPagesOfCourse[j].Progresses.length>0 && allPagesOfCourse[j].Progresses[0].iscompleted) { %>
                   checked
                   <% } %>
                   class="w-4 h-4 mr-2 align-middle" id="page-checkbox-<%= allPagesOfCourse[j].id %>"
@@ -97,7 +90,7 @@
       </div>
     </div>
 
-    <!--local JavaScript files -->
+   
     <script src="/js/functionalities.js"></script>
     <script src="/js/fetchFunctions.js"></script>
 
