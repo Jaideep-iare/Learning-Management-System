@@ -8,7 +8,7 @@
 <!--  add-course container  -->
 <div class="popup-container">
   <div class="popup flex">
-    <form action="/addcourse/<%=loggedInUser.id%>" method="post">
+    <form action="/addcourse" method="post">
       <input type="hidden" name="_csrf" value="<%=csrfToken %>" />
       <div>
         <label for="coursename" class="font-medium">Course Name</label>
@@ -39,12 +39,11 @@
 <% if (facultyCourses.length>0) { %>
 <p class="text-2xl font-medium ml-5 mb-2">Your Courses</p>
 <div
-  class="container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-2"
+  class="container-fluid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-2"
 >
   <% for( let i = 0; i < facultyCourses.length; i++ ) { %>
-  <% if
-  (facultyCourses[i].facultyid===loggedInUser.id) { %>
-  <div class="flex flex-col border border-1 p-4">
+  <% if(facultyCourses[i].facultyid===loggedInUser.id) { %>
+  <div class="flex flex-col border border-1 p-4 bg-white">
     <h3 class="mx-auto text-lg font-bold my-1">
       <%= facultyCourses[i].coursename %>
     </h3>
