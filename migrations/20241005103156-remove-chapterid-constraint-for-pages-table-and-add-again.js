@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.removeColumn("Pages", "chapterid");
+
     await queryInterface.addColumn("Pages", "chapterid", {
       type: Sequelize.DataTypes.INTEGER,
     });
