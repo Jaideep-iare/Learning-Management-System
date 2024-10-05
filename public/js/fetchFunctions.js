@@ -1,31 +1,31 @@
 var token = document
   .querySelector('meta[name="csrf-token"]')
   .getAttribute("content");
-// // eslint-disable-next-line no-unused-vars
-// function updatePageStatus(id) {
-//   const checkbox = document.getElementById(`page-checkbox-${id}`);
-//   const isCompleted = checkbox.checked;
+// eslint-disable-next-line no-unused-vars
+function updatePageStatus(id) {
+  const checkbox = document.getElementById(`page-checkbox-${id}`);
+  const isCompleted = checkbox.checked;
 
-//   fetch(`/setPageStatus/${id}`, {
-//     method: "post",
-//     headers: { "Content-Type": "application/json" },
-//     body: JSON.stringify({
-//       iscompleted: isCompleted, // Sending the checkbox status
-//       _csrf: token,
-//     }),
-//   })
-//     .then((res) => {
-//       if (res.ok) {
-//         // window.location.reload();
-//         console.log("Page status updated successfully!");
-//       } else {
-//         console.log("Error updating Page status");
-//       }
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// }
+  fetch(`/setPageStatus/${id}`, {
+    method: "post",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      iscompleted: isCompleted, // Sending the checkbox status
+      _csrf: token,
+    }),
+  })
+    .then((res) => {
+      if (res.ok) {
+        window.location.reload();
+        console.log("Page status updated successfully!");
+      } else {
+        console.log("Error updating Page status");
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
 
 // eslint-disable-next-line no-unused-vars
 function deletePage(id) {
