@@ -39,13 +39,13 @@
       <% } %>
 
       <!-- learn enrolled courses -->
-      <% if (loggedInUser.role === 'student' && enrolledcourses.length > 0) { %>
+     
       <%- include("enrolledcourses.ejs", {
                 enrolledcourses: enrolledcourses,
                 courseEnrollmentCounts: courseEnrollmentCounts,
                 coursePageStatus: coursePageStatus
             }) %>
-      <% } %>
+      
 
       <!-- not enrolled course -->
       <%- include("availablecourses.ejs", {
