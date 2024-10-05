@@ -39,6 +39,7 @@ function updatePageStatus(id) {
       iscompleted: isCompleted, // Sending the checkbox status
       _csrf: token,
     }),
+    
   })
     .then((res) => {
       if (res.ok) {
@@ -46,6 +47,7 @@ function updatePageStatus(id) {
         console.log("Page status updated successfully!");
       } else {
         console.log("Error updating Page status");
+        console.log(token)
       }
     })
     .catch((err) => {
