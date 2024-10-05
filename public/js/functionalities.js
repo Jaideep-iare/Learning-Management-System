@@ -7,6 +7,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const chapters = document.querySelectorAll(".chapter-name");
   const progressBars = document.querySelectorAll(".progress-bar");
 
+  //search functionality
+  function redirectToCourse() {
+    const input = document.getElementById("courseSearchInput");
+    const selectedCourseName = input.value;
+    const options = document.querySelectorAll("#my-list option");
+    // Loop through the options to find the selected course
+    options.forEach((option) => {
+      if (option.value === selectedCourseName) {
+        const courseId = option.getAttribute("data-id");
+        // Redirect to the enrolled page
+        window.location.href = `/enrolled/${courseId}`;
+      }
+    });
+  }
+  document.getElementById("courseSearchInput").onchange = redirectToCourse;
+
   //change progressbar percentage width as it is causing issue while in ejs styles
   progressBars.forEach((bar) => {
     const percentage = bar.getAttribute("data-percentage");
