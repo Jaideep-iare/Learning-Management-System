@@ -31,7 +31,10 @@ function updatePageStatus(id) {
 
   fetch(`/setPageStatus/${id}`, {
     method: "post",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json", 
+      _csrf: token,
+    },
     body: JSON.stringify({
       iscompleted: isCompleted, // Sending the checkbox status
       _csrf: token,

@@ -53,6 +53,10 @@ module.exports = (sequelize, DataTypes) => {
       studentid: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        references: {
+          model: "Users", // Assumes that the user model is stored in the 'Users' table
+          key: "id",
+        },
       },
     },
     {
