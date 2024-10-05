@@ -78,19 +78,25 @@ passport.use(
     (username, password, done) => {
       User.findOne({ where: { email: username } })
         .then(async (user) => {
+          if (!user) {
+            // User not found
+            return done(null, false, { message: "Invalid username or password" });
+          }
+
           const result = await bcrypt.compare(password, user.password);
           if (result) {
-            return done(null, user); //authentication successful
+            return done(null, user); // authentication successful
           } else {
-            return done(null, false, { message: "Invalid password" });
+            return done(null, false, { message: "Invalid username or password" });
           }
         })
         .catch((error) => {
-          return error;
+          return done(error); // Pass any error to done
         });
     }
   )
 );
+
 
 //After the user authenticated,store user in the session by serializing the user data:
 passport.serializeUser((user, done) => {
@@ -227,8 +233,20 @@ app.get(
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
     const courseId = req.params.id;
+    const userId = req.user.id;
 
     try {
+      // Check if the user is enrolled in the course
+      const enrollment = await Enrollment.findOne({
+        where: { courseid: courseId, studentid:userId },
+      });
+
+      // If not enrolled, redirect to available courses page
+      if (!enrollment) {
+        return res.redirect(`/available/${courseId}`);
+      }
+
+      // If enrolled, fetch course details
       const courseDetails = await Course.findByPk(courseId);
       const getChaptersByCourse = await Chapter.getChapters(courseId); // Fetch chapters for this course
       const totalChaptersData = await Chapter.getChapters(courseId);
@@ -237,10 +255,10 @@ app.get(
       );
       const allPagesOfCourse = await Page.getProgressPagesByUserId(
         allChaptersIdsForCourse,
-        req.user.id
+        userId
       );
-      // const completedPages = allPagesOfCourse.Progress.map((progress)=>progress.iscompleted)
-      // console.log(completedPages)
+
+      // Log completed pages for debugging
       for (var i = 0; i < allPagesOfCourse.length; i++) {
         if (
           allPagesOfCourse[i].Progresses &&
@@ -255,29 +273,28 @@ app.get(
         }
       }
 
-      // for search header
+      // Fetch all courses for search header
       const allCoursesOfSite = await Course.findAll();
+
+      // Check if request accepts HTML or JSON
       if (req.accepts("html")) {
         res.render("enrolled", {
           title: courseDetails.coursename,
           getChaptersByCourse,
           allPagesOfCourse,
           courseDetails,
-          student: req.user.id,
+          student: userId,
           allCoursesOfSite,
           csrfToken: req.csrfToken(),
         });
-      }
-      else {
+      } else {
         res.json({
-
           allPagesOfCourse,
           allChaptersIdsForCourse,
           courseDetails,
           allCoursesOfSite,
           getChaptersByCourse,
-          student: req.user.id,
-          
+          student: userId,
         });
       }
       
@@ -589,7 +606,7 @@ app.get(
             HAVING COUNT(p.pageid) = :totalPages
         `,
           {
-            replacements: { courseId: course.id, totalPages: totalPages },
+            replacements: { courseId: course.id, totalPages: totalPages },  //replacements are done to protect from sql query attacks
             type: sequelize.QueryTypes.SELECT,
           }
         );
@@ -606,7 +623,7 @@ app.get(
         });
       }
 
-      // For search header (optional)
+      // For search header 
       const allCoursesOfSite = await Course.findAll();
 
       // Render the viewreport page with the report data
@@ -679,26 +696,47 @@ app.get(
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
     const courseId = req.params.id;
-    const getChaptersByCourse = await Chapter.getChapters(courseId);
-    const course = await Course.findByPk(courseId, {
-      include: {
-        model: sequelize.models.User,
-        as: "faculty", // The alias for the faculty association
-        attrtbutes: ["name"], // Only include the faculty's name
-      },
-    });
-    // for search header
-    const allCoursesOfSite = await Course.findAll();
+    const userId = req.user.id;
 
-    res.render("available", {
-      title: course.coursename,
-      getChaptersByCourse,
-      course,
-      allCoursesOfSite,
-      csrfToken: req.csrfToken(),
-    });
+    try {
+      // Check if the user is already enrolled in the course
+      const enrollment = await Enrollment.findOne({
+        where: { courseid: courseId, studentid:userId },
+      });
+
+      // If the user is enrolled, redirect to the enrolled course page
+      if (enrollment) {
+        return res.redirect(`/enrolled/${courseId}`);
+      }
+
+      // If not enrolled, fetch course details and chapters
+      const getChaptersByCourse = await Chapter.getChapters(courseId);
+      const course = await Course.findByPk(courseId, {
+        include: {
+          model: sequelize.models.User,
+          as: "faculty", // The alias for the faculty association
+          attributes: ["name"], // Only include the faculty's name
+        },
+      });
+
+      // Fetch all courses for the search header
+      const allCoursesOfSite = await Course.findAll();
+
+      // Render the available course page
+      res.render("available", {
+        title: course.coursename,
+        getChaptersByCourse,
+        course,
+        allCoursesOfSite,
+        csrfToken: req.csrfToken(),
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error fetching course details");
+    }
   }
 );
+
 
 //user signup post request
 app.post("/users", async (req, res) => {
