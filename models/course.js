@@ -20,9 +20,9 @@ module.exports = (sequelize, DataTypes) => {
       Course.hasMany(models.Enrollment, {
         foreignKey: "courseid",
       });
-      Course.hasOne(models.Report, {
-        foreignKey: "courseid",
-      });
+      // Course.hasOne(models.Report, {
+      //   foreignKey: "courseid",
+      // });
     }
 
     static findAvailableCourse() {
