@@ -19,7 +19,7 @@ function updatePageStatus(id) {
   })
     .then((res) => {
       if (res.ok) {
-        window.location.reload();
+        // window.location.reload();
         console.log("Page status updated successfully!");
       } else {
         console.log("Error updating Page status");
