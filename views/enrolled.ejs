@@ -66,10 +66,7 @@
                 >
                   <input
                     type="checkbox"
-                    <%if(allPagesOfCourse[j].Progresses
-                    &&
-                    allPagesOfCourse[j].Progresses.length
-                  />0 && allPagesOfCourse[j].Progresses[0].iscompleted) { %>
+                    <%if(allPagesOfCourse[j].Progresses && allPagesOfCourse[j].Progresses.length>0 && allPagesOfCourse[j].Progresses[0].iscompleted) { %>
                   checked
                   <% } %>
                   class="w-4 h-4 mr-2 align-middle" id="page-checkbox-<%= allPagesOfCourse[j].id %>"
