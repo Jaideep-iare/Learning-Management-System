@@ -1,3 +1,20 @@
+// eslint-disable-next-line no-unused-vars
+function redirectToCourse() {
+  const input = document.getElementById('courseSearchInput');
+  const selectedCourseName = input.value;
+  const options = document.querySelectorAll('#my-list option');
+
+  // Loop through the options to find the selected course
+  options.forEach(option => {
+    if (option.value === selectedCourseName) {
+      const courseId = option.getAttribute('data-id');
+      // Redirect to the enrolled page
+      window.location.href = `/enrolled/${courseId}`;
+    }
+  });
+}
+
+
 var token = document
   .querySelector('meta[name="csrf-token"]')
   .getAttribute("content");
