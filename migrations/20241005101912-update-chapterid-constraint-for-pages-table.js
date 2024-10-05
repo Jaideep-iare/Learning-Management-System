@@ -1,24 +1,22 @@
-"use strict";
+'use strict';
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface) {
-    // Remove the existing foreign key constraint that was done without delete cascade
-    await queryInterface.removeConstraint(
-      "Pages",
-      "Pages_chapterid_Chapters_fk"
-    );
-
-    // Add the foreign key constraint again with `onDelete: 'CASCADE'`
+  async up (queryInterface, Sequelize) {
+    await queryInterface.addColumn("Pages", "chapterid", {
+      type: Sequelize.DataTypes.INTEGER,
+    });
+    // Add the foreign key constraint with cascade on delete
     await queryInterface.addConstraint("Pages", {
       fields: ["chapterid"],
       type: "foreign key",
-      name: "Pages_chapterid_Chapters_fk", // Optional: Explicitly naming the constraint
+      name: "Pages_chapterid_Chapters_fk", // Explicitly name the constraint
       references: {
         table: "Chapters",
         field: "id",
       },
       onDelete: "CASCADE", // Add cascade on delete
+      onUpdate: "CASCADE",
     });
     /**
      * Add altering commands here.
@@ -28,8 +26,7 @@ module.exports = {
      */
   },
 
-  async down(queryInterface) {
-    // If rolling back the migration, remove the column
+  async down (queryInterface) {
     await queryInterface.removeColumn("Pages", "chapterid");
     /**
      * Add reverting commands here.
@@ -37,5 +34,5 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-  },
+  }
 };
