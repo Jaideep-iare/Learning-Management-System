@@ -20,6 +20,37 @@
 
     <!-- protect from xss attack -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.4/purify.min.js"></script>
+    <script>
+      var token = document
+  .querySelector('meta[name="csrf-token"]')
+  .getAttribute("content");
+// eslint-disable-next-line no-unused-vars
+function updatePageStatus(id) {
+  const checkbox = document.getElementById(`page-checkbox-${id}`);
+  const isCompleted = checkbox.checked;
+
+  fetch(`/setPageStatus/${id}`, {
+    method: "post",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      iscompleted: isCompleted, // Sending the checkbox status
+      _csrf: token,
+    }),
+  })
+    .then((res) => {
+      if (res.ok) {
+        // window.location.reload();
+        console.log("Page status updated successfully!");
+      } else {
+        console.log("Error updating Page status");
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
+
+    </script>
   </head>
   <body>
     <%- include("header.ejs") %>
