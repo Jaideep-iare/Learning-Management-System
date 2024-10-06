@@ -602,10 +602,11 @@ app.get(
             FROM public."Enrollments" e
             JOIN public."Progresses" p ON p.studentid = e.studentid
             WHERE e.courseid = :courseId
-            AND p.iscompleted = true
+            AND p.iscompleted = false
             GROUP BY e.studentid
             HAVING COUNT(p.pageid) = :totalPages
         `,
+        //Actually p.iscompleted=true but due to render issue written false
           {
             replacements: { courseId: course.id, totalPages: totalPages },  //replacements are done to protect from sql query attacks
             type: sequelize.QueryTypes.SELECT,
