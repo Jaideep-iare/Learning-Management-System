@@ -82,3 +82,10 @@ body {
 #pagename {
   border: 1px solid #ccc;
 }
+/* Ensure uniform checkbox size */
+input[type="checkbox"] {
+  width: 20px !important;
+  height: 20px !important;
+  margin-right: 10px !important;
+  margin-left: 2px !important;
+}
