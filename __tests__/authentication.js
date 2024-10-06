@@ -72,7 +72,7 @@ describe("Faculty Authentication suite", () => {
     // Follow the redirect to check if we go back to the login page
     res = await agent.get(res.headers.location);
     expect(res.statusCode).toBe(200);
-    expect(res.text).toContain("Invalid password");
+    expect(res.text).toContain("Invalid username or password");
 
     //try correct password
     csrfToken = extractCsrfToken(res); //Update csrf
@@ -91,6 +91,36 @@ describe("Faculty Authentication suite", () => {
     res = await agent.get("/signout");
     expect(res.statusCode).toBe(302);
   });
+
+  test("Change password", async () => {
+    const agent = request.agent(server);
+    
+    let res = await agent.get("/login");
+    let csrfToken = extractCsrfToken(res);
+    res = await agent.post("/session").send({
+      email: "user.a@test.com",
+      password: "12345678",
+      _csrf: csrfToken,
+    });
+
+     res = await agent.get("/changepassword");
+     csrfToken = extractCsrfToken(res);
+
+    res = await agent.post("/changepassword").send({
+      email: "user.a@test.com",
+      password: "1234",
+      confirmpassword: "1234",
+      _csrf: csrfToken,
+    });
+    expect(res.statusCode).toBe(302);
+
+    //signout
+    res = await agent.get("/signout");
+    expect(res.statusCode).toBe(302);
+  });
+  
+
+
 });
 
 describe("Student Authentication suite", () => {
@@ -141,7 +171,7 @@ describe("Student Authentication suite", () => {
     // Follow the redirect to check if we go back to the login page
     res = await agent.get(res.headers.location);
     expect(res.statusCode).toBe(200);
-    expect(res.text).toContain("Invalid password");
+    expect(res.text).toContain("Invalid username or password");
 
     //try correct password
     csrfToken = extractCsrfToken(res); //Update csrf

@@ -12,6 +12,14 @@ function extractCsrfToken(res) {
   return $("[name=_csrf]").val();
 }
 
+//for html csrf token extraction
+function extractCsrfTokenFromHtml(htmlText) {
+  const csrfTokenRegex = /<meta name="csrf-token" content="([^"]+)"/;
+  const match = htmlText.match(csrfTokenRegex);
+  return match ? match[1] : null;  // The CSRF token will be in the first capturing group
+}
+
+
 // Helper function to login the user
 const login = async (agent, username, password) => {
   let res = await agent.get("/login");
@@ -385,7 +393,7 @@ describe("Course operations by Student suite", () => {
     expect(response.statusCode).toBe(200);
   });
 
-  test("Enroll the course", async () => {
+  test("Preview the course", async () => {
     const agent = request.agent(server);
     await login(agent, "student.user@test.com", "12345678");
     const groupedCourseResponse = await agent
@@ -420,6 +428,7 @@ describe("Course operations by Student suite", () => {
 
     let res = await agent.get("/home");
     let csrfToken = extractCsrfToken(res);
+   
 
     const response = await agent
       .post(`/enroll/${latestAvailableCourse.id}`)
@@ -432,31 +441,42 @@ describe("Course operations by Student suite", () => {
   test("Mark page completed", async () => {
     const agent = request.agent(server);
     await login(agent, "student.user@test.com", "12345678");
-    let groupedCourseResponse = await agent
-      .get("/home")
-      .set("Accept", "application/json");
-
+    
+    // Get the latest courses and ensure enrolled courses exist
+    let groupedCourseResponse = await agent.get("/home").set("Accept", "application/json");
     let parsedgroupedResponse = JSON.parse(groupedCourseResponse.text);
     let enrolledcourseslen = parsedgroupedResponse.enrolledcourses.length;
-
+    
     expect(enrolledcourseslen > 0).toBe(true);
-
-    let latestEnrolledCourse =
-      parsedgroupedResponse.enrolledcourses[enrolledcourseslen - 1];
-    groupedCourseResponse = await agent
-      .get(`/enrolled/${latestEnrolledCourse.courseid}`)
-      .set("Accept", "application/json");
+  
+    // Fetch latest enrolled course
+    let latestEnrolledCourse = parsedgroupedResponse.enrolledcourses[enrolledcourseslen - 1];
+    groupedCourseResponse = await agent.get(`/enrolled/${latestEnrolledCourse.courseid}`).set("Accept", "application/json");
     parsedgroupedResponse = JSON.parse(groupedCourseResponse.text);
+  
     const allpages = await db.Page.findAll();
     const pages = allpages.filter((page) => page.chapterid == 2);
+    
+    // Extract CSRF token from the latest GET response before making the POST request
+    let res = await agent.get(`/enrolled/${latestEnrolledCourse.Course.id}`);
+    
 
-    let res = await agent.get(`/enrolled/${latestEnrolledCourse.courseid}`);
-    let csrfToken = extractCsrfToken(res);
-    const response = await agent.post(`/setPageStatus/${pages[0].id}`).send({
-      iscompleted: false,
-      _csrf: csrfToken,
-    });
+    const csrfToken = extractCsrfTokenFromHtml(res.text)
 
-    expect(response.statusCode).toBe(500);
+    // Validate extracted token
+    expect(csrfToken).not.toBeNull();
+    
+    // Make POST request to update page status with the latest CSRF token
+    const response = await agent.post(`/setPageStatus/${pages[0].id}`)
+      .set("X-CSRF-Token", csrfToken)  // Set the CSRF token in the header
+      .send({
+        iscompleted: false,
+        _csrf: csrfToken,
+      });
+  
+    // Verify response
+    expect(response.statusCode).toBe(200); // issue with token generation
   });
+  
 });
+
