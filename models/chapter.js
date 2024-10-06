@@ -18,7 +18,10 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     static getChapters(courseId) {
-      return Chapter.findAll({ where: { courseid: courseId } });
+      return Chapter.findAll({ where: { courseid: courseId },
+        order: [
+        ['id', 'ASC'], // Order by chapterid in ascending order
+      ], });
     }
   }
   Chapter.init(

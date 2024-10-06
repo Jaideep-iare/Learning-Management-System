@@ -41,6 +41,9 @@ module.exports = (sequelize, DataTypes) => {
       return this.findAll({
         where: { chapterid: chapterids },
         attributes: ["id", "chapterid"], // Select page 'id' and associated 'chapterid'
+        order: [
+          ['id', 'ASC'], // Order by pageid in ascending order
+        ],
       });
     }
     static getPages(getChaptersByCourse) {
