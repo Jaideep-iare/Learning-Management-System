@@ -602,7 +602,7 @@ app.get(
             FROM public."Enrollments" e
             JOIN public."Progresses" p ON p.studentid = e.studentid
             WHERE e.courseid = :courseId
-            AND p.iscompleted = false
+            AND p.iscompleted = true
             GROUP BY e.studentid
             HAVING COUNT(p.pageid) = :totalPages
         `,
