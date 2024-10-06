@@ -258,20 +258,7 @@ app.get(
         userId
       );
 
-      // Log completed pages for debugging
-      for (var i = 0; i < allPagesOfCourse.length; i++) {
-        if (
-          allPagesOfCourse[i].Progresses &&
-          allPagesOfCourse[i].Progresses.iscompleted
-        ) {
-          console.log(
-            "pageid",
-            allPagesOfCourse[i].id,
-            "comp",
-            allPagesOfCourse[i].Progresses
-          );
-        }
-      }
+     
 
       // Fetch all courses for search header
       const allCoursesOfSite = await Course.findAll();
@@ -639,87 +626,7 @@ app.get("/viewreport", connectEnsureLogin.ensureLoggedIn(), async (req, res) => 
   }
 });
 
-// app.get(
-//   "/viewreport",
-//   connectEnsureLogin.ensureLoggedIn(),
-//   async (req, res) => {
-//     try {
-//       // Get the logged-in faculty user
-//       const facultyId = req.user.id;
-    
 
-//       // Fetch all courses created by this faculty
-//       const facultyCourses = await Course.findAll({
-//         where: {
-//           facultyid: facultyId,
-//         },
-//       });
-
-//       // Initialize an array to hold report data for each course
-//       const courseReport = [];
-
-//       // Loop through each course and gather report data
-//       for (const course of facultyCourses) {
-//         // Get the number of students enrolled in the course
-//         const totalEnrollments = await Enrollment.count({
-//           where: {
-//             courseid: course.id,
-//           },
-//         });
-
-//         // Get all chapters for this course
-//         const courseChapters = await Chapter.getChapters(course.id);
-//         const chapterIds = courseChapters.map((chapter) => chapter.id);
-
-//         // Get the total number of pages in all chapters for this course
-//         const totalPages = await Page.getPagesCountByChapterIds(chapterIds);
-
-//         // Get the number of students who have completed the course (i.e., completed all pages)
-//         const completedStudents = await sequelize.query(
-//           `
-//             SELECT e.studentid
-//             FROM public."Enrollments" e
-//             JOIN public."Progresses" p ON p.studentid = e.studentid
-//             WHERE e.courseid = :courseId
-//             AND p.iscompleted = true
-//             GROUP BY e.studentid
-//             HAVING COUNT(p.pageid) = :totalPages
-//         `,
-//         //Actually p.iscompleted=true but due to render issue written false
-//           {
-//             replacements: { courseId: course.id, totalPages: totalPages },  //replacements are done to protect from sql query attacks
-//             type: sequelize.QueryTypes.SELECT,
-//           }
-//         );
-//         console.log(completedStudents)
-
-//         // Get the number of students who are currently progressing (not completed)
-//         const inProgressStudents = totalEnrollments - completedStudents.length;
-
-//         // Add report data for this course to the array
-//         courseReport.push({
-//           course: course.coursename,
-//           totalEnrollments,
-//           completedStudents: completedStudents.length,
-//           inProgressStudents,
-//         });
-//       }
-
-//       // For search header 
-//       const allCoursesOfSite = await Course.findAll();
-
-//       // Render the viewreport page with the report data
-//       res.render("viewreport", {
-//         title: "Faculty Report",
-//         courseReport,
-//         allCoursesOfSite,
-//       });
-//     } catch (error) {
-//       console.error("Error generating faculty report:", error);
-//       res.status(500).send("An error occurred while generating the report.");
-//     }
-//   }
-// );
 
 //change password display
 app.get(
@@ -939,3 +846,88 @@ app.get("/profile", connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
 });
 
 module.exports = app;
+
+
+
+//THIS CODE IS MORE EFFICIENT BUT NOT WORKING IN RENDER
+// app.get(
+//   "/viewreport",
+//   connectEnsureLogin.ensureLoggedIn(),
+//   async (req, res) => {
+//     try {
+//       // Get the logged-in faculty user
+//       const facultyId = req.user.id;
+    
+
+//       // Fetch all courses created by this faculty
+//       const facultyCourses = await Course.findAll({
+//         where: {
+//           facultyid: facultyId,
+//         },
+//       });
+
+//       // Initialize an array to hold report data for each course
+//       const courseReport = [];
+
+//       // Loop through each course and gather report data
+//       for (const course of facultyCourses) {
+//         // Get the number of students enrolled in the course
+//         const totalEnrollments = await Enrollment.count({
+//           where: {
+//             courseid: course.id,
+//           },
+//         });
+
+//         // Get all chapters for this course
+//         const courseChapters = await Chapter.getChapters(course.id);
+//         const chapterIds = courseChapters.map((chapter) => chapter.id);
+
+//         // Get the total number of pages in all chapters for this course
+//         const totalPages = await Page.getPagesCountByChapterIds(chapterIds);
+
+//         // Get the number of students who have completed the course (i.e., completed all pages)
+//         const completedStudents = await sequelize.query(
+//           `
+//             SELECT e.studentid
+//             FROM public."Enrollments" e
+//             JOIN public."Progresses" p ON p.studentid = e.studentid
+//             WHERE e.courseid = :courseId
+//             AND p.iscompleted = true
+//             GROUP BY e.studentid
+//             HAVING COUNT(p.pageid) = :totalPages
+//         `,
+//         //Actually p.iscompleted=true but due to render issue written false
+//           {
+//             replacements: { courseId: course.id, totalPages: totalPages },  //replacements are done to protect from sql query attacks
+//             type: sequelize.QueryTypes.SELECT,
+//           }
+//         );
+//         console.log(completedStudents)
+
+//         // Get the number of students who are currently progressing (not completed)
+//         const inProgressStudents = totalEnrollments - completedStudents.length;
+
+//         // Add report data for this course to the array
+//         courseReport.push({
+//           course: course.coursename,
+//           totalEnrollments,
+//           completedStudents: completedStudents.length,
+//           inProgressStudents,
+//         });
+//       }
+
+//       // For search header 
+//       const allCoursesOfSite = await Course.findAll();
+
+//       // Render the viewreport page with the report data
+//       res.render("viewreport", {
+//         title: "Faculty Report",
+//         courseReport,
+//         allCoursesOfSite,
+//       });
+//     } catch (error) {
+//       console.error("Error generating faculty report:", error);
+//       res.status(500).send("An error occurred while generating the report.");
+//     }
+//   }
+// );

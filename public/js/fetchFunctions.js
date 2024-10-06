@@ -1,34 +1,36 @@
 var token = document
   .querySelector('meta[name="csrf-token"]')
   .getAttribute("content");
+
 // eslint-disable-next-line no-unused-vars
-function updatePageStatus(id) {
+async function updatePageStatus(id) {
   const checkbox = document.getElementById(`page-checkbox-${id}`);
   const isCompleted = checkbox.checked;
 
-  fetch(`/setPageStatus/${id}`, {
-    method: "post",
-    headers: { 
-      "Content-Type": "application/json", 
-      "X-CSRF-Token": token, // Correct header name
-    },
-    body: JSON.stringify({
-      iscompleted: isCompleted,
-      _csrf: token,
-    }),
-  })
-    .then((res) => {
-      if (res.ok) {
-        window.location.reload();
-        console.log("Page status updated successfully!");
-      } else {
-        console.log("Error updating Page status");
-      }
-    })
-    .catch((err) => {
-      console.log(err);
+  try {
+    const res = await fetch(`/setPageStatus/${id}`, {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json", 
+        "X-CSRF-Token": token,
+      },
+      body: JSON.stringify({
+        iscompleted: isCompleted,
+        _csrf: token,
+      }),
     });
+
+    if (res.ok) {
+      window.location.reload();
+      console.log("Page status updated successfully!");
+    } else {
+      console.log("Error updating Page status");
+    }
+  } catch (err) {
+    console.log(err);
+  }
 }
+
 
 // eslint-disable-next-line no-unused-vars
 function deletePage(id) {
