@@ -721,6 +721,11 @@ app.get(
 
       // Fetch all courses for the search header
       const allCoursesOfSite = await Course.findAll();
+      const enrolledStudents = await Enrollment.count({
+        where: {
+          courseid: courseId,
+        },
+      });
 
       // Render the available course page
       res.render("available", {
@@ -728,6 +733,7 @@ app.get(
         getChaptersByCourse,
         course,
         allCoursesOfSite,
+        enrolledStudents,
         csrfToken: req.csrfToken(),
       });
     } catch (error) {
