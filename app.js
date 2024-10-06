@@ -650,16 +650,21 @@ app.post(
     const submittedData = req.body;
 
     try {
-      const currentUser = await User.findByPk(user.id);
+      // Check if the user is valid
+      
+      if (user.email!=submittedData.email) { // Assuming 'isActive' is a field that indicates user status
+        req.flash("error", "Invalid email. Cannot change the password.");
+        return res.redirect(`/changepassword`);
+      }
+
       const isMatch = await bcrypt.compare(
         submittedData.password,
-        currentUser.password
+        user.password
       );
 
       if (isMatch) {
-        return res
-          .status(400)
-          .send("New password cannot be the same as the old password.");
+        req.flash("error", "New password cannot be the same as the old one.");
+        return res.redirect(`/changepassword`);
       }
 
       if (submittedData.password === submittedData.confirmpassword) {
@@ -668,13 +673,12 @@ app.post(
         console.log("Password updated successfully");
         return res.redirect("/home");
       } else {
-        return res.status(400).send("Passwords do not match.");
+        req.flash("error", "Passwords do not match.");
+        return res.redirect(`/changepassword`);
       }
     } catch (error) {
-      console.error("Error updating password:", error);
-      return res
-        .status(500)
-        .send("An error occurred while updating the password.");
+      req.flash("error", "Error updating password. Try reloading the page and try again");
+      return res.redirect(`/changepassword`);
     }
   }
 );
