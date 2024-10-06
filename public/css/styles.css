@@ -14,7 +14,7 @@ body {
 }
 .profile-details {
   position: absolute;
-  width: 200px;
+  width: max-content;
   height: min-content;
   visibility: hidden;
   top: 100%;
@@ -88,4 +88,19 @@ input[type="checkbox"] {
   height: 20px !important;
   margin-right: 10px !important;
   margin-left: 2px !important;
+}
+
+
+@media (max-width: 1040px) {
+  .profile-details {
+    position: absolute;
+    width: max-content;
+    height: min-content;
+    visibility: hidden;
+    top: 100%;
+    right: 0; /* Align dropdown to the right */
+    left: auto; /* Remove left positioning */
+    margin-top: 5px;
+    z-index: 2;
+  }
 }
