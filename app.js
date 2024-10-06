@@ -598,8 +598,8 @@ app.get(
         const completedStudents = await sequelize.query(
           `
             SELECT e.studentid
-            FROM public."Enrollments" e
-            JOIN public."Progresses" p ON p.studentid = e.studentid
+            FROM "Enrollments" e
+            JOIN "Progresses" p ON p.studentid = e.studentid
             WHERE e.courseid = :courseId
             AND p.iscompleted = true
             GROUP BY e.studentid
