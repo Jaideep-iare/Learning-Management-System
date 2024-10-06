@@ -12,17 +12,17 @@
       <input type="hidden" name="_csrf" value="<%=csrfToken %>" />
       <div>
         <label for="coursename" class="font-medium">Course Name</label>
-        <input
+        <input required
           type="text"
           class="border-2 border-slate-400 font-medium text-slate-900 rounded p-2 w-full my-3"
           name="coursename"
-          id=""
+          id="coursename"
         />
       </div>
 
       <div>
         <label for="description" class="font-medium">Description</label>
-        <textarea
+        <textarea required
           class="border-2 border-slate-400 font-medium text-slate-900 rounded p-2 w-full my-3 h-32 resize-none"
           name="description"
           id="description"
