@@ -595,22 +595,37 @@ app.get(
         const totalPages = await Page.getPagesCountByChapterIds(chapterIds);
 
         // Get the number of students who have completed the course (i.e., completed all pages)
+        // const completedStudents = await sequelize.query(
+        //   `
+        //     SELECT e.studentid
+        //     FROM public."Enrollments" e
+        //     JOIN public."Progresses" p ON p.studentid = e.studentid
+        //     WHERE e.courseid = :courseId
+        //     AND p.iscompleted = true
+        //     GROUP BY e.studentid
+        //     HAVING COUNT(p.pageid) = :totalPages
+        // `,
+        //   {
+        //     replacements: { courseId: course.id, totalPages: totalPages },  //replacements are done to protect from sql query attacks
+        //     type: sequelize.QueryTypes.SELECT,
+        //   }
+        // );
         const completedStudents = await sequelize.query(
           `
             SELECT e.studentid
-            FROM "Enrollments" e
-            JOIN "Progresses" p ON p.studentid = e.studentid
+            FROM enrollments e
+            JOIN progresses p ON p.studentid = e.studentid
             WHERE e.courseid = :courseId
             AND p.iscompleted = true
             GROUP BY e.studentid
             HAVING COUNT(p.pageid) = :totalPages
-        `,
+          `,
           {
-            replacements: { courseId: course.id, totalPages: totalPages },  //replacements are done to protect from sql query attacks
+            replacements: { courseId: course.id, totalPages: totalPages },
             type: sequelize.QueryTypes.SELECT,
+            logging: console.log,  // This will log the query to the console
           }
         );
-
         // Get the number of students who are currently progressing (not completed)
         const inProgressStudents = totalEnrollments - completedStudents.length;
 
