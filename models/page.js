@@ -31,8 +31,12 @@ module.exports = (sequelize, DataTypes) => {
             attributes: ["iscompleted"], // Only fetch the iscompleted field
           },
         ],
+        order: [
+          ['id', 'ASC'], // Order by pageid in ascending order
+        ],
       });
     }
+    
     static getPagesByChapterIds(chapterids) {
       return this.findAll({
         where: { chapterid: chapterids },
