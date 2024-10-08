@@ -741,12 +741,12 @@ app.get(
 app.post("/users", async (req, res) => {
   try {
     // Validate input fields
-    if (!req.body.firstName || req.body.firstName.trim() === "") {
-      req.flash("error", "First Name cannot be empty");
+    if (!req.body.name || req.body.name.trim() === "") {
+      req.flash("error", "Name cannot be empty");
       return res.redirect("/signup");
     }
-    if (!req.body.lastName || req.body.lastName.trim() === "") {
-      req.flash("error", "Last Name cannot be empty");
+    if (!req.body.role || req.body.role.trim() === "") {
+      req.flash("error", "Role cannot be empty");
       return res.redirect("/signup");
     }
     if (!req.body.email || req.body.email.trim() === "") {
@@ -761,10 +761,10 @@ app.post("/users", async (req, res) => {
     // Hash the user password
     const hashedPwd = await bcrypt.hash(req.body.password, saltRounds);
 
-    // Create a new user in the database
+    // Create a new user
     const user = await User.create({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
+      name: req.body.name,
+      role: req.body.role,
       email: req.body.email,
       password: hashedPwd,
     });
@@ -779,20 +779,11 @@ app.post("/users", async (req, res) => {
       res.redirect("/home");
     });
   } catch (error) {
-    if (error.name === "SequelizeValidationError") {
-      // Handle Sequelize validation errors
-      error.errors.forEach((err) => {
-        req.flash("error", err.message);
-      });
-      return res.redirect("/signup");
-    } else {
-      console.error("Error during user signup:", error);
-      req.flash("error", "An error occurred while signing up. Please try again.");
-      return res.redirect("/signup");
-    }
+    console.error("Error during user signup:", error);
+    req.flash("error", "An error occurred while signing up. Please try again.");
+    return res.redirect("/signup");
   }
 });
-
 
 //signup route
 app.get("/signup", (req, res) => {
