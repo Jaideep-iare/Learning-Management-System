@@ -2,6 +2,9 @@
 
 A web-based Learning Management System (LMS) that enables faculty to create and manage courses, and allows students to enroll in courses, track progress, and access course content. This project includes features for both faculty and students, with user-friendly dashboards, course chapters, and enrollment management.
 
+
+ Video Demo of the application : [Video Demo](https://youtu.be/z0SitOC9dME?si=Ses4ecTTqI-k8SZR)
+
 ## Features
 
 - **Faculty Features**:
@@ -19,6 +22,7 @@ A web-based Learning Management System (LMS) that enables faculty to create and 
 
 - **Features common for both Student and Faculty Account**:
   - Browse all the course details using search functionality
+  - Get number of enrollments count for the course
   - Change your password
   - View user profile details
   - Signout
